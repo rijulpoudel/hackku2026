@@ -60,19 +60,19 @@ export function CharacterSelect({ onSelect }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16">
+    <div className="character-select-wrapper">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="character-select-header"
       >
-        <h2 className="text-3xl font-light text-white mb-3">Who are you?</h2>
-        <p className="text-gray-500 text-sm max-w-md mx-auto">
+        <h2 className="character-select-title">Who are you?</h2>
+        <p className="character-select-subtitle">
           Every graduate starts differently. Choose your path — it shapes every decision ahead.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
+      <div className="character-grid">
         {CHARACTERS.map((char, i) => (
           <motion.button
             key={char.type}
@@ -82,13 +82,13 @@ export function CharacterSelect({ onSelect }: Props) {
             onClick={() => handleSelect(char.type)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="text-left p-5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/8 hover:border-amber-400/30 transition-all duration-200"
+            className="character-card"
           >
-            <div className="text-3xl mb-3">{char.emoji}</div>
-            <h3 className="text-white font-medium mb-1">{char.title}</h3>
-            <p className="text-amber-400 text-xs font-medium mb-1">{char.salary}</p>
-            <p className="text-gray-500 text-xs mb-2">{char.subtitle}</p>
-            <p className="text-gray-400 text-xs leading-relaxed">{char.description}</p>
+            <div className="character-emoji">{char.emoji}</div>
+            <h3 className="character-name">{char.title}</h3>
+            <p className="character-salary">{char.salary}</p>
+            <p className="character-location">{char.subtitle}</p>
+            <p className="character-description">{char.description}</p>
           </motion.button>
         ))}
       </div>

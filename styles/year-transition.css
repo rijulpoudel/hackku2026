@@ -1,0 +1,23 @@
+/* ============================================
+   YearTransition component styles
+   ============================================ */
+
+.year-transition-wrapper {
+  @apply min-h-screen flex items-center justify-center;
+}
+
+.year-transition-center {
+  @apply text-center;
+}
+
+.year-transition-label {
+  @apply text-amber-400 text-sm font-medium tracking-widest uppercase mb-3;
+}
+
+.year-transition-age {
+  @apply text-6xl font-light text-white mb-2;
+}
+
+.year-transition-flavor {
+  @apply text-gray-500 text-sm;
+}

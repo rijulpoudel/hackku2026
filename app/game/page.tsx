@@ -183,14 +183,14 @@ export default function GamePage() {
 
   if (!playerState) {
     return (
-      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin" />
+      <div className="page-loading">
+        <div className="spinner" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white relative">
+    <div className="page-wrapper relative">
       <NetWorthBar
         netWorth={playerState.netWorth}
         year={playerState.currentYear}

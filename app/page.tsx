@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="page-wrapper">
       {phase === 'landing' && (
         <LandingScreen onStart={() => setPhase('character')} />
       )}
@@ -29,10 +29,10 @@ export default function Home() {
         <CharacterSelect onSelect={handleCharacterSelect} />
       )}
       {phase === 'leaderboard' && (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16">
+        <div className="leaderboard-phase">
           <button
             onClick={() => setPhase('landing')}
-            className="mb-8 text-gray-500 text-sm hover:text-white transition-colors"
+            className="leaderboard-back-btn"
           >
             ← Back
           </button>
@@ -44,7 +44,7 @@ export default function Home() {
       {phase === 'landing' && (
         <button
           onClick={() => setPhase('leaderboard')}
-          className="fixed bottom-6 right-6 text-gray-600 text-xs hover:text-gray-400 transition-colors"
+          className="leaderboard-toggle-btn"
         >
           View Leaderboard
         </button>
