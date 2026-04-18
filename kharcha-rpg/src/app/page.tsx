@@ -1,6 +1,5 @@
+import LandingPage from "@/pages-view/LandingPage";
+
 export default function Home() {
-  return (
-    <main>
-    </main>
-  );
+  return <LandingPage />;
 }
