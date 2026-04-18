@@ -64,12 +64,12 @@ export default function GamePage() {
       })
       const decision = await res.json()
       setCurrentDecision(decision)
-
-      if (state.currentYear <= 3) {
-        playAudio(`narrator-year${state.currentYear}`)
-      }
-
       setPhase('decision')
+
+      // Play narrator after decision screen appears
+      if (state.currentYear <= 3) {
+        setTimeout(() => playAudio(`narrator-year${state.currentYear}`), 300)
+      }
     } catch (err) {
       console.error('Failed to fetch decision:', err)
       setPhase('decision')
@@ -157,6 +157,10 @@ export default function GamePage() {
     setNetWorthDelta(0)
 
     setPhase('transition')
+    // Play transition narration for years 2+ (year 1 has its own narrator)
+    if (nextYear > 1) {
+      setTimeout(() => playAudio('narrator-transition'), 300)
+    }
     setTimeout(() => fetchNextDecision(newState), 2000)
   }
 
