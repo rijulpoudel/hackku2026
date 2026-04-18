@@ -56,15 +56,15 @@ export default function VerdictPage() {
 
   if (loading || !playerState) {
     return (
-      <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center gap-4">
-        <div className="w-8 h-8 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm">Generating your financial verdict...</p>
+      <div className="page-loading-verdict">
+        <div className="spinner--large" />
+        <p className="decision-loading-text">Generating your financial verdict...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="page-wrapper">
       <VerdictDocument
         verdict={verdict!}
         playerState={playerState}

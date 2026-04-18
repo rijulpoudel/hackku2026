@@ -1,0 +1,51 @@
+/* ============================================
+   NetWorthBar component styles
+   ============================================ */
+
+.networth-bar {
+  @apply fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 bg-[#1a1a1a]/90 backdrop-blur border-b border-white/5;
+}
+
+.networth-year-label {
+  @apply text-xs text-gray-500 font-medium tracking-wider uppercase;
+}
+
+.networth-values {
+  @apply flex items-center gap-3;
+}
+
+.networth-delta {
+  @apply text-sm font-medium;
+}
+
+.networth-delta--positive {
+  @apply text-green-400;
+}
+
+.networth-delta--negative {
+  @apply text-red-400;
+}
+
+.networth-amount {
+  @apply text-lg font-semibold tabular-nums;
+}
+
+.networth-amount--negative {
+  @apply text-red-400;
+}
+
+.networth-amount--positive {
+  @apply text-white;
+}
+
+.networth-suffix {
+  @apply text-xs text-gray-500;
+}
+
+.networth-progress-track {
+  @apply absolute bottom-0 left-0 h-[1px] bg-white/5 w-full;
+}
+
+.networth-progress-fill {
+  @apply h-full bg-amber-400/60;
+}

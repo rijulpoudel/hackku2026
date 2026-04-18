@@ -1,0 +1,28 @@
+/* ============================================
+   DecisionLoading component styles
+   ============================================ */
+
+.decision-loading-wrapper {
+  @apply min-h-screen flex items-center justify-center;
+}
+
+.decision-loading-center {
+  @apply text-center;
+}
+
+.decision-loading-spinner {
+  @apply w-8 h-8 border-2 border-amber-400/20 border-t-amber-400 rounded-full mx-auto mb-4;
+}
+
+.decision-loading-text {
+  @apply text-gray-500 text-sm;
+}
+
+/* Generic spinner used in game and verdict loading states */
+.spinner {
+  @apply w-6 h-6 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin;
+}
+
+.spinner--large {
+  @apply w-8 h-8 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin;
+}

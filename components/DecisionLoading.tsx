@@ -17,18 +17,18 @@ export function DecisionLoading({ age }: Props) {
   const message = LOADING_MESSAGES[age % LOADING_MESSAGES.length]
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="decision-loading-wrapper">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center"
+        className="decision-loading-center"
       >
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-2 border-amber-400/20 border-t-amber-400 rounded-full mx-auto mb-4"
+          className="decision-loading-spinner"
         />
-        <p className="text-gray-500 text-sm">{message}</p>
+        <p className="decision-loading-text">{message}</p>
       </motion.div>
     </div>
   )

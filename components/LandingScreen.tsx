@@ -8,14 +8,14 @@ interface Props {
 
 export function LandingScreen({ onStart }: Props) {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-[#020023]">
-      <div className="absolute inset-0 z-[1]">
+    <main className="landing-main">
+      <div className="landing-bg-layer">
         <Image
           src="/landing/backg.svg"
           alt=""
           fill
           priority
-          className="object-cover"
+          className="landing-bg-img"
         />
       </div>
 
@@ -23,40 +23,40 @@ export function LandingScreen({ onStart }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative z-20 mx-auto flex min-h-screen w-full max-w-[1300px] items-center justify-center px-4"
+        className="landing-content"
       >
-        <div className="relative w-[min(92vw,860px)]">
+        <div className="landing-book-wrapper">
           <Image
             src="/landing/book.svg"
             alt="LAUNCH main menu book"
             width={860}
             height={610}
             priority
-            className="h-auto w-full"
+            className="landing-responsive-img"
           />
 
-          <div className="absolute left-[6%] bottom-[7%] z-30 w-[24%]">
+          <div className="landing-envelope">
             <Image
               src="/landing/envelope.svg"
               alt="Envelope"
               width={180}
               height={120}
-              className="h-auto w-full"
+              className="landing-responsive-img"
             />
           </div>
 
-          <div className="absolute right-[6%] top-[28%] z-30 flex w-[34%] max-w-[230px] flex-col gap-2 sm:gap-3">
+          <div className="landing-buttons-group">
             <button
               type="button"
               aria-label="Load scenes"
-              className="cursor-default"
+              className="landing-btn-disabled"
             >
               <Image
                 src="/landing/loadscenes.svg"
                 alt="Load Scenes"
                 width={230}
                 height={72}
-                className="h-auto w-full"
+                className="landing-responsive-img"
               />
             </button>
 
@@ -66,28 +66,28 @@ export function LandingScreen({ onStart }: Props) {
               onClick={onStart}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="outline-none"
+              className="landing-btn-play"
             >
               <Image
                 src="/landing/play.svg"
                 alt="Play"
                 width={230}
                 height={72}
-                className="h-auto w-full"
+                className="landing-responsive-img"
               />
             </motion.button>
 
             <button
               type="button"
               aria-label="Characters"
-              className="cursor-default"
+              className="landing-btn-disabled"
             >
               <Image
                 src="/landing/characters.svg"
                 alt="Characters"
                 width={230}
                 height={72}
-                className="h-auto w-full"
+                className="landing-responsive-img"
               />
             </button>
           </div>
@@ -111,7 +111,7 @@ export function LandingScreen({ onStart }: Props) {
             repeat: Infinity,
             repeatType: 'mirror',
           }}
-          className="pointer-events-none absolute z-30"
+          className="landing-star"
           style={{ top: star.top, left: star.left, right: star.right, width: star.size }}
         >
           <Image
@@ -119,7 +119,7 @@ export function LandingScreen({ onStart }: Props) {
             alt=""
             width={200}
             height={200}
-            className="h-auto w-full"
+            className="landing-responsive-img"
           />
         </motion.div>
       ))}
@@ -128,14 +128,14 @@ export function LandingScreen({ onStart }: Props) {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.9, delay: 0.25 }}
-        className="pointer-events-none absolute bottom-0 left-0 z-30 w-[clamp(130px,14vw,240px)]"
+        className="landing-lantern-left"
       >
         <Image
           src="/landing/lantern-left.svg"
           alt=""
           width={240}
           height={500}
-          className="h-auto w-full"
+          className="landing-responsive-img"
         />
       </motion.div>
 
@@ -143,14 +143,14 @@ export function LandingScreen({ onStart }: Props) {
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.9, delay: 0.25 }}
-        className="pointer-events-none absolute bottom-0 right-0 z-30 w-[clamp(130px,14vw,240px)]"
+        className="landing-lantern-right"
       >
         <Image
           src="/landing/lantern-right.svg"
           alt=""
           width={240}
           height={500}
-          className="h-auto w-full"
+          className="landing-responsive-img"
         />
       </motion.div>
     </main>
