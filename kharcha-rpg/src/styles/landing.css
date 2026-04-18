@@ -50,8 +50,8 @@
 
 .landing-book-wrapper {
     position: relative;
-    width: calc(35vw * 1.3);
-    /* 30% bigger */
+    width: calc(35vw * 1.755);
+    /* ← was 1.3, now 1.3 * 1.35 = 1.755 */
     pointer-events: auto;
 }
 
@@ -64,8 +64,9 @@
 /* Options — vertical stack on right side of book */
 .landing-options {
     position: absolute;
-    top: 50%;
-    right: -22%;
+    top: 37%;
+    right: 10%;
+    /* ← was -22%, pushed more left */
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
@@ -75,8 +76,8 @@
 }
 
 .landing-option-btn {
-    width: calc(90% * 0.9);
-    /* 10% smaller */
+    width: calc(106% * 0.9 * 0.65);
+    /* ← 35% smaller */
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
@@ -87,12 +88,12 @@
     filter: brightness(1.25);
 }
 
-/* Envelope — 25% of book width, bottom-left */
 .landing-envelope {
     position: absolute;
-    bottom: 0;
-    left: -8%;
-    width: 25%;
+    bottom: 0.2%;
+    left: 2%;
+    width: 28%;
+    /* ← was 25%, scaled up ~same ratio as book */
     height: auto;
     z-index: 3;
     cursor: pointer;
@@ -115,9 +116,10 @@
 
 /* Biggest — 20% smaller than original 12vw = 9.6vw */
 .landing-constellation-1 {
-    top: 16px;
-    left: 16px;
-    width: 9.6vw;
+    top: -6px;
+    left: -30px;
+    width: 30vw;
+    z-index: 3;
     animation: constellationTwinkle 3s ease-in-out infinite;
 }
 
@@ -243,16 +245,16 @@
 /* Subtle slow sway + glow pulse */
 @keyframes swayLeft {
     0% {
-        transform: translateX(30px) translateY(-50px);
+        transform: translateX(30px) translateY(-50px) rotate(-1deg);
     }
 
     50% {
-        transform: translateX(30.05px) translateY(-50px);
+        transform: translateX(30.05px) translateY(-50px) rotate(-1deg);
         filter: brightness(1.1) drop-shadow(0 0 12px rgba(123, 193, 255, 0.8));
     }
 
     100% {
-        transform: translateX(30px) translateY(-50px);
+        transform: translateX(30px) translateY(-50px) rotate(-1deg);
     }
 }
 
