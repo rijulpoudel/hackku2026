@@ -104,3 +104,108 @@
   width: 32vw;
   pointer-events: none;
 }
+
+/* Credits Modal */
+.credits-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.credits-modal {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.credits-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f59e0b;
+  margin-bottom: 0.25rem;
+}
+
+.credits-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.25rem;
+}
+
+.credits-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 1rem 0;
+}
+
+.credits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.credits-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.credits-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.credits-name {
+  font-size: 0.9rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.credits-tech {
+  margin-top: 0.5rem;
+}
+
+.credits-tech-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.credits-tech-stack {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.credits-close-btn {
+  margin-top: 1.5rem;
+  padding: 0.6rem 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.credits-close-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}

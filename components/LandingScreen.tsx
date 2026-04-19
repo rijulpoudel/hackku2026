@@ -4,9 +4,13 @@ import Image from 'next/image'
 
 interface Props {
   onStart: () => void
+  onContinue: () => void
+  onLeaderboard: () => void
+  onCredits: () => void
+  hasSavedGame: boolean
 }
 
-export function LandingScreen({ onStart }: Props) {
+export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, hasSavedGame }: Props) {
   return (
     <main className="landing-main">
       <div className="landing-bg-layer" />
@@ -51,8 +55,8 @@ export function LandingScreen({ onStart }: Props) {
             </div>
           </div>
 
-
           <div className="landing-buttons-group">
+            {/* Play — start new game */}
             <motion.button
               type="button"
               aria-label="Play"
@@ -61,84 +65,60 @@ export function LandingScreen({ onStart }: Props) {
               whileTap={{ scale: 0.98 }}
               className="landing-btn-play"
             >
-              <Image
-                src="/landing/play.svg"
-                alt="Play"
-                width={230}
-                height={72}
-                className="landing-responsive-img"
-              />
+              <Image src="/landing/play.svg" alt="Play" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
+            {/* Continue — resume saved game */}
             <motion.button
               type="button"
               aria-label="Continue"
-              className="landing-btn-disabled"
+              onClick={onContinue}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
+              className="landing-btn-disabled"
+              style={{ opacity: hasSavedGame ? 1 : 0.5 }}
             >
-              <Image
-                src="/landing/continue.svg"
-                alt="Continue"
-                width={230}
-                height={72}
-                className="landing-responsive-img"
-              />
+              <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
+            {/* Scene — show leaderboard */}
             <motion.button
               type="button"
               aria-label="Scene"
-              className="landing-btn-disabled"
+              onClick={onLeaderboard}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
+              className="landing-btn-disabled"
             >
-              <Image
-                src="/landing/scene.svg"
-                alt="Scene"
-                width={230}
-                height={72}
-                className="landing-responsive-img"
-              />
+              <Image src="/landing/scene.svg" alt="Scene" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
+            {/* Load Scenes — also show leaderboard */}
             <motion.button
               type="button"
               aria-label="Load Scenes"
-              className="landing-btn-disabled"
+              onClick={onLeaderboard}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
+              className="landing-btn-disabled"
             >
-              <Image
-                src="/landing/loadscenes.svg"
-                alt="Load Scenes"
-                width={230}
-                height={72}
-                className="landing-responsive-img"
-              />
+              <Image src="/landing/loadscenes.svg" alt="Load Scenes" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
+            {/* Credits */}
             <motion.button
               type="button"
               aria-label="Credits"
-              className="landing-btn-disabled"
+              onClick={onCredits}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
+              className="landing-btn-disabled"
             >
-              <Image
-                src="/landing/credits.svg"
-                alt="Credits"
-                width={230}
-                height={72}
-                className="landing-responsive-img"
-              />
+              <Image src="/landing/credits.svg" alt="Credits" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
           </div>
         </div>
       </motion.div>
-
-
-
     </main>
   )
 }
