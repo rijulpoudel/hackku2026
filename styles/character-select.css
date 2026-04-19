@@ -34,7 +34,8 @@
 .character-content-overlay {
   position: absolute;
   inset: 0;
-  padding: 6% 8%;
+  padding: 6% 3%;
+  padding-left: 6.5%;
   display: flex;
   flex-direction: row;
   z-index: 20;
@@ -58,8 +59,8 @@
 
 .character-title-container {
   position: absolute;
-  bottom: 350px;
-  left: 13px;
+  bottom: 338px;
+  left: 43px;
   z-index: 30;
 }
 
@@ -84,6 +85,8 @@
 .description-box-img {
   width: 100%;
   height: 100%;
+  padding-right: -30px;
+  padding-top: 27px;
   object-fit: contain;
 }
 
@@ -140,23 +143,23 @@
 }
 
 .plate-0 {
-  bottom: 270px;
-  left: 1%;
+  bottom: 162px;
+  left: -35%;
 }
 
 .plate-1 {
-  bottom: 180px;
-  left: 22%;
+  bottom: 122px;
+  left: -1%;
 }
 
 .plate-2 {
-  bottom: 90px;
-  left: 43%;
+  bottom: 72px;
+  left: 33%;
 }
 
 .plate-3 {
-  bottom: 30px;
-  left: 64%;
+  bottom: 32px;
+  left: 67%;
 }
 
 .character-plate-button.active {
