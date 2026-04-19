@@ -18,6 +18,9 @@ export function LandingScreen({ onStart }: Props) {
         className="landing-content"
       >
         <div className="landing-book-wrapper">
+          <div className="landing-funtext">
+            <Image src="/landing/funtextbg.svg" alt="Fun Text" width={600} height={120} className="landing-responsive-img" />
+          </div>
           <Image
             src="/landing/book.svg"
             alt="LAUNCH main menu book"
@@ -136,20 +139,6 @@ export function LandingScreen({ onStart }: Props) {
 
 
 
-      <motion.div
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.9, delay: 0.25 }}
-        className="landing-lantern-right"
-      >
-        <Image
-          src="/landing/lantern-right.svg"
-          alt=""
-          width={240}
-          height={500}
-          className="landing-responsive-img"
-        />
-      </motion.div>
     </main>
   )
 }

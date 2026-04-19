@@ -34,3 +34,73 @@
 .leaderboard-toggle-btn {
   @apply fixed bottom-6 right-6 text-gray-600 text-xs hover:text-gray-400 transition-colors;
 }
+
+/* Global Banner Styles */
+.global-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: 40vw;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.global-banner-img {
+  width: 100%;
+  height: auto;
+}
+
+.global-banner-text {
+  position: absolute;
+  color: #fff;
+  font-family: 'HYWenHei', system-ui, -apple-system, sans-serif;
+  font-size: 1.2vw;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.global-responsive-img {
+  height: auto;
+  width: 100%;
+}
+
+.global-lantern-right {
+  pointer-events: none;
+  position: fixed;
+  bottom: -25px;
+  right: 250px;
+  z-index: 25;
+  width: clamp(130px, 14vw, 240px);
+}
+
+.global-bush {
+  position: fixed;
+  bottom: -5px;
+  right: 10%;
+  z-index: 28;
+  width: 28vw;
+  pointer-events: none;
+}
+
+.global-flowero {
+  position: fixed;
+  bottom: -35px;
+  left: 2%;
+  z-index: 29;
+  width: 18vw;
+  pointer-events: none;
+}
+
+.global-flowert {
+  position: fixed;
+  bottom: -5px;
+  left: 15%;
+  z-index: 28;
+  width: 32vw;
+  pointer-events: none;
+}

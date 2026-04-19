@@ -49,6 +49,7 @@
 .landing-book-wrapper {
   position: relative;
   width: 45vw;
+  margin-top: 200px;
 }
 
 .landing-responsive-img {
@@ -88,14 +89,6 @@
   filter: brightness(1.1);
 }
 
-.landing-lantern-right {
-  pointer-events: none;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 30;
-  width: clamp(130px, 14vw, 240px);
-}
 
 .landing-book-text-left {
   position: absolute;
@@ -144,4 +137,14 @@
 .stat-label {
   font-size: 0.8vw;
   opacity: 0.8;
+}
+
+.landing-funtext {
+  position: absolute;
+  bottom: calc(70% - 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+  width: 70%;
+  pointer-events: none;
 }
