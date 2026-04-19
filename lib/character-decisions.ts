@@ -789,6 +789,7 @@ const ALL_DECISIONS: Record<CharacterType, Record<number, GeneratedDecision>> = 
   alex: ALEX_DECISIONS,
   jordan: JORDAN_DECISIONS,
   sam: SAM_DECISIONS,
+  custom: {}, // Custom characters use Gemini for all decisions
 };
 
 export function getCharacterDecision(
