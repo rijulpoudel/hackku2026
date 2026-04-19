@@ -225,6 +225,11 @@ export default function GamePage() {
   function handleGoHome() {
     playSfx('click')
     stopNarration()
+    // Explicitly flush current state to sessionStorage before navigating so
+    // "Continue" on the landing screen always has the latest snapshot.
+    if (playerState && typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_current_state', JSON.stringify(playerState))
+    }
     router.push('/')
   }
 
@@ -250,6 +255,21 @@ export default function GamePage() {
           return
         } catch {
           // Corrupt save — fall through to fresh start
+        }
+      }
+
+      // Continue — restore in-progress session (set by auto-save or handleGoHome)
+      const currentStateRaw = sessionStorage.getItem('launch_current_state')
+      if (currentStateRaw) {
+        try {
+          const currentState: PlayerState = JSON.parse(currentStateRaw)
+          setPlayerState(currentState)
+          // Shorter delay — player already saw the transition once
+          setTimeout(() => fetchNextDecision(currentState), 1200)
+          return
+        } catch {
+          // Corrupt — clear it and fall through to fresh start
+          sessionStorage.removeItem('launch_current_state')
         }
       }
 

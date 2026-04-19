@@ -54,9 +54,16 @@ export default function Home() {
     setPhase('loadgame')
   }
 
+  function handleStart() {
+    // Don't clear launch_current_state here — only clear it when a character is
+    // actually selected (handleCharacterSelect). This lets the player change their
+    // mind and hit Continue to go back to the old game.
+    setPhase('character')
+  }
+
   // Shared landing props
   const landingProps = {
-    onStart: () => setPhase('character'),
+    onStart: handleStart,
     onContinue: handleContinue,
     onLeaderboard: () => setPhase('leaderboard'),
     onCredits: () => setPhase('credits'),
