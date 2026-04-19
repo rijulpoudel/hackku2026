@@ -14,6 +14,7 @@
   width: 100%;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -173,4 +174,28 @@
 /* Selection marker */
 .character-plate-button.active {
   filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+}
+
+/* "Make Your Own Story" CTA button — below the board frame */
+.custom-char-cta {
+  display: block;
+  margin: 0.75rem auto 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 9999px;
+  padding: 0.5rem 1.6rem;
+  font-family: 'HYWenHei', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 30;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.custom-char-cta:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.6);
 }

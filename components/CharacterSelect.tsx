@@ -165,22 +165,23 @@ export function CharacterSelect({ onSelect, onCustom }: Props) {
           </div>
         </div>
 
-          {/* Custom character button — bottom of overlay */}
-          {onCustom && (
-            <motion.button
-              className="custom-char-cta"
-              onClick={() => { playSfx('click'); onCustom() }}
-              onMouseEnter={() => playSfx('hover')}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              ✦ Make Your Own Story
-            </motion.button>
-          )}
       </div>
+
+      {/* Custom character button — sits below the board, always visible */}
+      {onCustom && (
+        <motion.button
+          className="custom-char-cta"
+          onClick={() => { playSfx('click'); onCustom() }}
+          onMouseEnter={() => playSfx('hover')}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.97 }}
+        >
+          ✦ Make Your Own Story
+        </motion.button>
+      )}
     </motion.div>
   )
 }
