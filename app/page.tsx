@@ -7,12 +7,13 @@ import { CharacterSelect } from '@/components/CharacterSelect'
 import { Leaderboard } from '@/components/Leaderboard'
 import { CreditsModal } from '@/components/CreditsModal'
 import { LoadGameModal } from '@/components/LoadGameModal'
+import { ScenesModal } from '@/components/ScenesModal'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { CharacterType } from '@/types/game'
 import { hasSaves } from '@/lib/save-game'
 import { playSfx } from '@/lib/audio'
 
-type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame'
+type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame' | 'scenes'
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>('loading')
@@ -55,9 +56,11 @@ export default function Home() {
   }
 
   function handleStart() {
-    // Don't clear launch_current_state here — only clear it when a character is
-    // actually selected (handleCharacterSelect). This lets the player change their
-    // mind and hit Continue to go back to the old game.
+    // Clear any in-progress game so Continue reflects the new game after it starts
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('launch_current_state')
+    }
+    setHasSavedGame(false)
     setPhase('character')
   }
 
@@ -66,6 +69,7 @@ export default function Home() {
     onStart: handleStart,
     onContinue: handleContinue,
     onLeaderboard: () => setPhase('leaderboard'),
+    onScenes: () => setPhase('scenes'),
     onCredits: () => setPhase('credits'),
     onLoadGame: handleLoadGame,
     hasSavedGame,
@@ -122,12 +126,30 @@ export default function Home() {
         </>
       )}
 
-      {/* ── Load game modal — overlays landing ──────────── */}
+      {/* ── Load game page — standalone ──────────── */}
       {phase === 'loadgame' && (
-        <>
-          <LandingScreen {...landingProps} />
+        <motion.div
+          key="loadgame"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+        >
           <LoadGameModal onClose={() => setPhase('landing')} />
-        </>
+        </motion.div>
+      )}
+
+      {/* ── Scenes journal page — standalone ──────── */}
+      {phase === 'scenes' && (
+        <motion.div
+          key="scenes"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+        >
+          <ScenesModal onClose={() => setPhase('landing')} />
+        </motion.div>
       )}
 
       {/* Leaderboard toggle shortcut (visible on landing) */}

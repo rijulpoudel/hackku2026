@@ -2,7 +2,6 @@
 import { motion } from 'framer-motion'
 import { GeneratedDecision } from '@/types/game'
 import { ChoiceCard } from './ChoiceCard'
-import { useState } from 'react'
 
 interface Props {
   decision: GeneratedDecision
@@ -11,22 +10,10 @@ interface Props {
 }
 
 export function DecisionScreen({ decision, onChoice, chosenIndex }: Props) {
-  const [imgLoaded, setImgLoaded] = useState(false)
-
   return (
     <div className="decision-screen">
-      {/* Full-bleed image with overlay */}
+      {/* Solid dark background — no AI-generated images */}
       <div className="decision-bg">
-        {decision.image_url && (
-          <motion.img
-            src={decision.image_url}
-            alt="Decision scene"
-            className="decision-bg-img"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: imgLoaded ? 0.35 : 0 }}
-            onLoad={() => setImgLoaded(true)}
-          />
-        )}
         <div className="decision-bg-overlay" />
       </div>
 

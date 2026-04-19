@@ -1,6 +1,7 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { toggleMute, isMuted } from '@/lib/audio'
 
 interface Props {
   netWorth: number
@@ -11,6 +12,7 @@ interface Props {
 
 export function NetWorthBar({ netWorth, year, age, delta }: Props) {
   const [showDelta, setShowDelta] = useState(false)
+  const [muted, setMuted] = useState(false)
 
   useEffect(() => {
     if (delta !== 0) {
@@ -19,6 +21,11 @@ export function NetWorthBar({ netWorth, year, age, delta }: Props) {
       return () => clearTimeout(timer)
     }
   }, [netWorth, delta])
+
+  function handleMuteToggle() {
+    const nowMuted = toggleMute()
+    setMuted(nowMuted)
+  }
 
   const isNegative = netWorth < 0
 
@@ -62,6 +69,25 @@ export function NetWorthBar({ netWorth, year, age, delta }: Props) {
 
         <span className="networth-suffix">net worth</span>
       </div>
+
+      {/* Mute toggle */}
+      <button
+        onClick={handleMuteToggle}
+        title={muted ? 'Unmute' : 'Mute'}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          color: muted ? '#4b5563' : '#9ca3af',
+          padding: '0.25rem 0.4rem',
+          borderRadius: '0.375rem',
+          transition: 'color 0.2s',
+          lineHeight: 1,
+        }}
+      >
+        {muted ? '🔇' : '🔊'}
+      </button>
 
       {/* Progress bar */}
       <div className="networth-progress-track">

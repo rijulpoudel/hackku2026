@@ -1,18 +1,20 @@
 'use client'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { playSfx } from '@/lib/audio'
 
 interface Props {
   onStart: () => void
   onContinue: () => void
   onLeaderboard: () => void
+  onScenes: () => void
   onCredits: () => void
   onLoadGame: () => void
   hasSavedGame: boolean
   hasSaveSlots: boolean
 }
 
-export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
+export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
   return (
     <main className="landing-main">
       <motion.div
@@ -93,6 +95,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               type="button"
               aria-label="Play"
               onClick={onStart}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-play"
@@ -105,6 +108,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               type="button"
               aria-label="Continue"
               onClick={onContinue}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -113,11 +117,12 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Scene — leaderboard */}
+            {/* Scene — scenes journal */}
             <motion.button
               type="button"
               aria-label="Scene"
-              onClick={onLeaderboard}
+              onClick={onScenes}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -130,6 +135,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               type="button"
               aria-label="Load Scenes"
               onClick={onLoadGame}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -143,6 +149,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               type="button"
               aria-label="Credits"
               onClick={onCredits}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"

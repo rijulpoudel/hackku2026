@@ -12,6 +12,11 @@ interface LeaderboardEntry {
 }
 
 const CHARACTER_EMOJI: Record<string, string> = {
+  maya: '🔬',
+  alex: '💼',
+  jordan: '🎨',
+  sam: '📚',
+  // legacy entries from before character rename
   employee: '💼',
   freelancer: '🎨',
   student: '📚',

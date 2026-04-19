@@ -797,3 +797,26 @@ export function getCharacterDecision(
 ): GeneratedDecision | null {
   return ALL_DECISIONS[character]?.[year] ?? null;
 }
+
+export interface SceneEntry {
+  year: number;
+  age: number;
+  financial_term: string;
+  scenario: string;
+  question: string;
+}
+
+export function getAllScenesForCharacter(character: CharacterType): SceneEntry[] {
+  const decisions = ALL_DECISIONS[character];
+  if (!decisions) return [];
+  return Array.from({ length: 12 }, (_, i) => i + 1).map((year) => {
+    const d = decisions[year];
+    return {
+      year,
+      age: 22 + year - 1,
+      financial_term: d?.financial_term ?? `Year ${year}`,
+      scenario: d?.scenario ?? "",
+      question: d?.question ?? "",
+    };
+  });
+}

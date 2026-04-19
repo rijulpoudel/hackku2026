@@ -1,0 +1,31 @@
+<svg width="141" height="69" viewBox="0 0 141 69" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_g_174_8)">
+<rect x="1.5" y="1.5" width="138" height="66" rx="33" fill="#EFDDC8"/>
+<rect x="3" y="3" width="135" height="63" rx="31.5" stroke="#C9B199" stroke-width="3"/>
+</g>
+<g filter="url(#filter1_g_174_8)">
+<rect x="8.5" y="7.5" width="123" height="53" rx="26.5" fill="#EFDDC8"/>
+<rect x="10" y="9" width="120" height="50" rx="25" stroke="#C9B199" stroke-width="3"/>
+</g>
+<path d="M68.1959 18.5125C69.3478 17.1626 71.6516 17.1625 72.8034 18.5125L88.2086 36.5701C88.9204 37.4044 88.2435 38.5953 87.0573 38.5955H82.7379V47.4558C82.7378 49.2033 81.1261 50.6198 79.1383 50.6199H74.1012V41.8201C74.1011 40.7157 73.2055 39.8203 72.1012 39.8201H69.6207C68.5163 39.8202 67.6209 40.7157 67.6207 41.8201V50.6199H61.861C59.8732 50.6199 58.2615 49.2033 58.2614 47.4558V38.5955H53.942C52.7556 38.5955 52.0788 37.4045 52.7907 36.5701L68.1959 18.5125Z" fill="#4A4A4A"/>
+<defs>
+<filter id="filter0_g_174_8" x="0" y="0" width="141" height="69" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.99900001287460327 0.99900001287460327" numOctaves="3" seed="9109" />
+<feDisplacementMap in="shape" scale="3" xChannelSelector="R" yChannelSelector="G" result="displacedImage" width="100%" height="100%" />
+<feMerge result="effect1_texture_174_8">
+<feMergeNode in="displacedImage"/>
+</feMerge>
+</filter>
+<filter id="filter1_g_174_8" x="7" y="6" width="126" height="56" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.99900001287460327 0.99900001287460327" numOctaves="3" seed="9109" />
+<feDisplacementMap in="shape" scale="3" xChannelSelector="R" yChannelSelector="G" result="displacedImage" width="100%" height="100%" />
+<feMerge result="effect1_texture_174_8">
+<feMergeNode in="displacedImage"/>
+</feMerge>
+</filter>
+</defs>
+</svg>

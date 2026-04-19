@@ -58,21 +58,42 @@ export async function narrateScene(text: string): Promise<void> {
 
 // ─── Background Music ─────────────────────────────────────────────────────────
 let bgMusic: Howl | null = null;
+let bgMusicScheduled = false;
 
-export function startBgMusic() {
-  if (typeof window === "undefined") return;
-  if (bgMusic) return; // Already playing
-
+function _playBgMusic() {
+  if (bgMusic) return;
   bgMusic = new Howl({
     src: ["/audio/bg-music.mp3"],
     loop: true,
-    volume: 0.18, // Quiet underneath the narration
-    html5: true,
+    volume: 0.18,
+    html5: true, // streams without Web Audio API — avoids autoplay block
     onloaderror: () => {
-      bgMusic = null; // File not present — skip silently
+      bgMusic = null;
     },
   });
   bgMusic.play();
+}
+
+export function startBgMusic() {
+  if (typeof window === "undefined") return;
+  if (bgMusic || bgMusicScheduled) return;
+
+  bgMusicScheduled = true;
+
+  // Try immediately (works if there was already a user gesture on this page)
+  _playBgMusic();
+
+  // Also hook the next click in case autoplay was blocked — starts music on
+  // the very first tap/click the user makes, which always has user-activation.
+  const unlock = () => {
+    if (!bgMusic) _playBgMusic();
+    window.removeEventListener("click", unlock);
+    window.removeEventListener("keydown", unlock);
+    window.removeEventListener("touchstart", unlock);
+  };
+  window.addEventListener("click", unlock, { once: true });
+  window.addEventListener("keydown", unlock, { once: true });
+  window.addEventListener("touchstart", unlock, { once: true });
 }
 
 export function stopBgMusic() {
@@ -89,23 +110,57 @@ export function setBgMusicVolume(vol: number) {
   bgMusic?.volume(vol);
 }
 
+// ─── Mute ─────────────────────────────────────────────────────────────────────
+let _muted = false;
+
+export function isMuted() {
+  return _muted;
+}
+
+export function toggleMute() {
+  _muted = !_muted;
+  if (_muted) {
+    Howler.volume(0);
+    if (currentNarrator) currentNarrator.volume = 0;
+  } else {
+    Howler.volume(1);
+    if (currentNarrator) currentNarrator.volume = 0.85;
+  }
+  return _muted;
+}
+
 // ─── Sound Effects ────────────────────────────────────────────────────────────
 const sfx: Record<string, Howl> = {};
 
 const SFX_FILES: Record<string, string> = {
   click: "/audio/click.mp3",
+  hover: "/audio/click.mp3",   // reuse click at lower volume for hover
   "choice-good": "/audio/choice-correct.mp3",
   "choice-neutral": "/audio/choice-neutral.mp3",
   "choice-bad": "/audio/choice-bad.mp3",
 };
 
+const SFX_VOLUME: Record<string, number> = {
+  click: 0.5,
+  hover: 0.12,
+  "choice-good": 0.7,
+  "choice-neutral": 0.7,
+  "choice-bad": 0.7,
+};
+
 export function playSfx(key: string) {
   if (typeof window === "undefined") return;
+  if (_muted) return;
+
+  // Resume Web Audio API context if suspended (production autoplay policy)
+  if (Howler.ctx && Howler.ctx.state === "suspended") {
+    Howler.ctx.resume();
+  }
 
   if (!sfx[key] && SFX_FILES[key]) {
     sfx[key] = new Howl({
       src: [SFX_FILES[key]],
-      volume: key === "click" ? 0.5 : 0.7,
+      volume: SFX_VOLUME[key] ?? 0.5,
       onloaderror: () => {
         delete sfx[key];
       },

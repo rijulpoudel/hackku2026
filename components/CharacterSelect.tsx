@@ -1,8 +1,9 @@
 'use client'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import Image from 'next/image'
 import { CharacterType } from '@/types/game'
+import { playSfx } from '@/lib/audio'
 
 const CHARACTERS: Array<{
   type: CharacterType
@@ -20,7 +21,7 @@ const CHARACTERS: Array<{
     plateImg: '/your_scence/Grad student.svg',
     salary: '$28,000/yr stipend',
     netWorth: '-$34,000',
-    description: 'Free tuition. Health insurance. Loans deferred — but accruing interest every month. Smart, disciplined, and completely unprepared for real-world money. The academic path has hidden costs AND hidden benefits.',
+    description: 'Free tuition. Health insurance. Loans deferred — but accruing interest every month. Smart, disciplined, and completely unprepared for real-world money.',
   },
   {
     type: 'alex',
@@ -29,7 +30,7 @@ const CHARACTERS: Array<{
     plateImg: '/your_scence/Corporate employee.svg',
     salary: '$58,000/yr',
     netWorth: '-$29,900',
-    description: 'Stable salary. 401k with 5% match. Full benefits. On paper: the dream. High enough income to build real wealth early — or make expensive lifestyle mistakes that compound for decades.',
+    description: 'Stable salary. 401k with 5% match. Full benefits. High enough income to build real wealth early — or make expensive lifestyle mistakes that compound for decades.',
   },
   {
     type: 'jordan',
@@ -38,7 +39,7 @@ const CHARACTERS: Array<{
     plateImg: '/your_scence/Freelance.svg',
     salary: '$0 (building)',
     netWorth: '-$36,000',
-    description: 'Building a client base from scratch. No employer to catch anything. Taxes, health insurance, retirement — all yours. High freedom, high responsibility. The feast-or-famine cycle starts now.',
+    description: 'Building a client base from scratch. Taxes, health insurance, retirement — all yours. High freedom, high responsibility. The feast-or-famine cycle starts now.',
   },
   {
     type: 'sam',
@@ -47,7 +48,7 @@ const CHARACTERS: Array<{
     plateImg: '/your_scence/Side hustler.svg',
     salary: '$38,000/yr',
     netWorth: '-$31,900',
-    description: 'Low income on paper. PSLF-eligible from day one. Pension. Low cost of living. If played right, quietly the most financially secure path of the four. Knowing the right programs changes everything.',
+    description: 'Low income on paper. PSLF-eligible from day one. Pension. If played right, quietly the most financially secure path of the four. Knowing the right programs changes everything.',
   },
 ]
 
@@ -68,36 +69,73 @@ export function CharacterSelect({ onSelect }: Props) {
       <div className="character-frame-board">
         <Image
           src="/your_scence/Frame_board.svg"
-          alt=""
-          width={1200}
-          height={800}
+          alt="Selection Board"
+          width={1400}
+          height={900}
           className="frame-board-img"
+          priority
         />
 
         <div className="character-content-overlay">
           {/* Left: title + description box */}
           <div className="character-left-section">
-            <h2 className="character-pick-title">Pick your story</h2>
+            <div className="character-title-container">
+              {/* Animated butterfly near the title */}
+              <motion.div
+                className="title-butterfly"
+                animate={{
+                  x: [0, 15, 0, -15, 0],
+                  y: [0, -15, -30, -15, 0],
+                  rotate: [0, 10, 0, -10, 0],
+                  scaleY: [1, 0.7, 1, 0.7, 1],
+                  filter: [
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                    'brightness(1.4) drop-shadow(0 0 15px rgba(255,255,255,0.7))',
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                  ],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+              >
+                <Image
+                  src="/landing/butter fly.svg"
+                  alt=""
+                  width={40}
+                  height={40}
+                />
+              </motion.div>
+              <h2 className="character-pick-title">Pick your story</h2>
+            </div>
 
             <div className="character-description-container">
               <Image
                 src="/your_scence/Description box.svg"
                 alt=""
-                width={400}
-                height={300}
+                width={350}
+                height={270}
                 className="description-box-img"
               />
               <div className="description-text-overlay">
-                <p style={{ fontWeight: 700, marginBottom: '0.3rem', fontSize: '0.9rem' }}>
-                  {hoveredChar.name}
-                  <span style={{ fontWeight: 400, marginLeft: '0.4rem', fontSize: '0.75rem', opacity: 0.7 }}>
-                    · {hoveredChar.title}
-                  </span>
-                </p>
-                <p style={{ fontSize: '0.72rem', marginBottom: '0.4rem', opacity: 0.8 }}>
-                  {hoveredChar.salary} · {hoveredChar.netWorth} net worth
-                </p>
-                <p className="description-text">{hoveredChar.description}</p>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={hoveredChar.type}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.18 }}
+                    className="description-text"
+                  >
+                    <p style={{ fontWeight: 700, marginBottom: '0.2rem', fontSize: '0.82rem' }}>
+                      {hoveredChar.name}
+                      <span style={{ fontWeight: 400, marginLeft: '0.3rem', fontSize: '0.7rem', opacity: 0.7 }}>
+                        · {hoveredChar.title}
+                      </span>
+                    </p>
+                    <p style={{ fontSize: '0.68rem', marginBottom: '0.3rem', opacity: 0.75 }}>
+                      {hoveredChar.salary} · {hoveredChar.netWorth} net worth
+                    </p>
+                    <p style={{ fontSize: '0.72rem', lineHeight: 1.5 }}>{hoveredChar.description}</p>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -108,16 +146,17 @@ export function CharacterSelect({ onSelect }: Props) {
               <motion.button
                 key={char.type}
                 className={`character-plate-button plate-${i}`}
-                onMouseEnter={() => setHoveredChar(char)}
+                onMouseEnter={() => { setHoveredChar(char); playSfx('hover') }}
                 onClick={() => onSelect(char.type, char.name)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.08, x: -15 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Image
                   src={char.plateImg}
                   alt={char.title}
-                  width={320}
-                  height={100}
+                  width={150}
+                  height={48}
+                  style={{ height: 'auto' }}
                   className="plate-img"
                 />
               </motion.button>
