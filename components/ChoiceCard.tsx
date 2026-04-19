@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { GeneratedChoice } from '@/types/game'
+import { playSfx } from '@/lib/audio'
 
 const LABEL_COLORS: Record<string, string> = {
   Best: 'choice-card--best',
@@ -28,15 +29,24 @@ interface Props {
   onSelect: () => void
   isChosen: boolean
   isDisabled: boolean
+  /** Whether any choice has been made yet — reveals labels after selection */
+  anyChosen: boolean
 }
 
-export function ChoiceCard({ choice, index, onSelect, isChosen, isDisabled }: Props) {
-  const borderColor = LABEL_COLORS[choice.label] || LABEL_COLORS.Neutral
+export function ChoiceCard({ choice, index, onSelect, isChosen, isDisabled, anyChosen }: Props) {
+  const borderColor = anyChosen ? (LABEL_COLORS[choice.label] || LABEL_COLORS.Neutral) : ''
   const textColor = LABEL_TEXT[choice.label] || LABEL_TEXT.Neutral
+
+  function handleClick() {
+    if (!isDisabled) {
+      playSfx('click')
+      onSelect()
+    }
+  }
 
   return (
     <motion.button
-      onClick={onSelect}
+      onClick={handleClick}
       disabled={isDisabled}
       whileHover={!isDisabled ? { scale: 1.01 } : {}}
       whileTap={!isDisabled ? { scale: 0.99 } : {}}
@@ -52,10 +62,20 @@ export function ChoiceCard({ choice, index, onSelect, isChosen, isDisabled }: Pr
           <p className="choice-card-title">{choice.title}</p>
           <p className="choice-card-impact">{choice.impact}</p>
         </div>
-        <span className={`choice-card-label ${textColor}`}>
-          {choice.label}
-        </span>
+
+        {/* Label only appears after a choice has been made */}
+        {anyChosen && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className={`choice-card-label ${textColor}`}
+          >
+            {choice.label}
+          </motion.span>
+        )}
       </div>
+
       {isChosen && (
         <motion.p
           initial={{ opacity: 0, height: 0 }}

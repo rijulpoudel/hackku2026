@@ -7,10 +7,12 @@ interface Props {
   onContinue: () => void
   onLeaderboard: () => void
   onCredits: () => void
+  onLoadGame: () => void
   hasSavedGame: boolean
+  hasSaveSlots: boolean
 }
 
-export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, hasSavedGame }: Props) {
+export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
   return (
     <main className="landing-main">
       <div className="landing-bg-layer" />
@@ -117,14 +119,15 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, h
               <Image src="/landing/scene.svg" alt="Scene" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Load Scenes — also show leaderboard */}
+            {/* Load Scenes — opens saved games modal */}
             <motion.button
               type="button"
               aria-label="Load Scenes"
-              onClick={onLeaderboard}
+              onClick={onLoadGame}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
+              style={{ opacity: hasSaveSlots ? 1 : 0.5 }}
             >
               <Image src="/landing/loadscenes.svg" alt="Load Scenes" width={230} height={72} className="landing-responsive-img" />
             </motion.button>

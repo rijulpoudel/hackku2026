@@ -1,13 +1,14 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { DecisionScreen } from '@/components/DecisionScreen'
 import { YearTransition } from '@/components/YearTransition'
 import { DecisionLoading } from '@/components/DecisionLoading'
 import { NetWorthBar } from '@/components/NetWorthBar'
 import { FactBox } from '@/components/FactBox'
+import { SaveButton } from '@/components/SaveButton'
 import { PlayerState, GeneratedDecision, CharacterType } from '@/types/game'
-import { playAudio } from '@/lib/audio'
-import { useRouter } from 'next/navigation'
+import { narrateScene, stopNarration, playChoiceResult, playSfx, startBgMusic } from '@/lib/audio'
 
 type GamePhase = 'transition' | 'loading' | 'decision' | 'fact' | 'complete'
 
@@ -32,7 +33,7 @@ const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
     loanBalance: 34000,
     monthlyExpenses: 1800,
     isFreelancing: false,
-    isPSLFEligible: false, // changes if she takes university job
+    isPSLFEligible: false,
     isPensionEnrolled: false,
     isGradStudent: true,
     hasLLC: false,
@@ -68,8 +69,8 @@ const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
     loanBalance: 34000,
     monthlyExpenses: 2000,
     isFreelancing: false,
-    isPSLFEligible: true, // teacher at public school = PSLF eligible day one
-    isPensionEnrolled: false, // they choose in scene 3
+    isPSLFEligible: true,
+    isPensionEnrolled: false,
     isGradStudent: false,
     hasLLC: false,
   },
@@ -117,6 +118,8 @@ export default function GamePage() {
   const initialized = useRef(false)
 
   async function fetchNextDecision(state: PlayerState) {
+    // Stop any previous narration before loading the next scene
+    stopNarration()
     setPhase('loading')
     try {
       const res = await fetch('/api/generate-decision', {
@@ -124,14 +127,12 @@ export default function GamePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state),
       })
-      const decision = await res.json()
+      const decision: GeneratedDecision = await res.json()
       setCurrentDecision(decision)
       setPhase('decision')
 
-      // Play narrator after decision screen appears
-      if (state.currentYear <= 3) {
-        setTimeout(() => playAudio(`narrator-year${state.currentYear}`), 300)
-      }
+      // Narrate the scene scenario via ElevenLabs (after a short delay so screen renders first)
+      setTimeout(() => narrateScene(decision.scenario), 400)
     } catch (err) {
       console.error('Failed to fetch decision:', err)
       setPhase('decision')
@@ -140,15 +141,17 @@ export default function GamePage() {
 
   async function handleChoice(choiceIndex: number) {
     if (!currentDecision || !playerState) return
+
+    // Stop narration when player makes a choice
+    stopNarration()
+
     setChosenIndex(choiceIndex)
 
     const choice = currentDecision.choices[choiceIndex]
     const delta = choice.net_worth_change
     setNetWorthDelta(delta)
 
-    if (['Best', 'Smart'].includes(choice.label)) playAudio('choice-correct')
-    else if (choice.label === 'Neutral') playAudio('choice-neutral')
-    else playAudio('choice-bad')
+    playChoiceResult(choice.label)
 
     try {
       const res = await fetch('/api/apply-choice', {
@@ -170,12 +173,10 @@ export default function GamePage() {
         decisions: [...playerState.decisions, record],
       }
 
-      // Apply flag changes if any
       if (choice.flag_changes) {
         Object.assign(newState, choice.flag_changes)
       }
 
-      // Update specific financial fields based on scenario
       if (currentDecision.scenario_type === 'savings' && choice.label === 'Best') {
         newState.hasEmergencyFund = true
         newState.took401kMatch = true
@@ -184,12 +185,7 @@ export default function GamePage() {
       setPlayerState(newState)
     } catch (err) {
       console.error('Failed to apply choice:', err)
-      // Still update local state
-      const newState = {
-        ...playerState,
-        netWorth: playerState.netWorth + delta,
-      }
-      setPlayerState(newState)
+      setPlayerState({ ...playerState, netWorth: playerState.netWorth + delta })
     }
 
     setPhase('fact')
@@ -200,7 +196,7 @@ export default function GamePage() {
     const nextYear = playerState.currentYear + 1
 
     if (nextYear > 12) {
-      // Save final state and go to verdict
+      stopNarration()
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('launch_final_state', JSON.stringify(playerState))
       }
@@ -217,13 +213,19 @@ export default function GamePage() {
     setCurrentDecision(null)
     setChosenIndex(null)
     setNetWorthDelta(0)
-
     setPhase('transition')
-    // Play transition narration for years 2+ (year 1 has its own narrator)
+
+    // Narrate transition text for years 2+
     if (nextYear > 1) {
-      setTimeout(() => playAudio('narrator-transition'), 300)
+      setTimeout(() => narrateScene('Time passes. The choices you made are already compounding.'), 300)
     }
     setTimeout(() => fetchNextDecision(newState), 2000)
+  }
+
+  function handleGoHome() {
+    playSfx('click')
+    stopNarration()
+    router.push('/')
   }
 
   // Initialize on mount
@@ -231,10 +233,27 @@ export default function GamePage() {
     if (initialized.current) return
     initialized.current = true
 
+    startBgMusic()
+
     let character: CharacterType = 'alex'
     let name = 'Graduate'
 
     if (typeof window !== 'undefined') {
+      // Check if loading a saved game
+      const savedStateRaw = sessionStorage.getItem('launch_load_save')
+      if (savedStateRaw) {
+        try {
+          const savedState: PlayerState = JSON.parse(savedStateRaw)
+          sessionStorage.removeItem('launch_load_save')
+          setPlayerState(savedState)
+          setTimeout(() => fetchNextDecision(savedState), 1500)
+          return
+        } catch {
+          // Corrupt save — fall through to fresh start
+        }
+      }
+
+      // Fresh start
       const storedChar = sessionStorage.getItem('launch_character') as CharacterType
       const storedName = sessionStorage.getItem('launch_name')
       if (storedChar) character = storedChar
@@ -243,9 +262,16 @@ export default function GamePage() {
 
     const initialState = buildInitialState(character, name)
     setPlayerState(initialState)
-
     setTimeout(() => fetchNextDecision(initialState), 2000)
   }, [])
+
+  // Also save to sessionStorage on every state change so "Continue" always works
+  useEffect(() => {
+    if (!playerState) return
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_current_state', JSON.stringify(playerState))
+    }
+  }, [playerState])
 
   if (!playerState) {
     return (
@@ -257,6 +283,29 @@ export default function GamePage() {
 
   return (
     <div className="page-wrapper relative">
+      {/* Back to home button */}
+      <button
+        onClick={handleGoHome}
+        style={{
+          position: 'fixed',
+          top: '3.5rem',
+          left: '1rem',
+          zIndex: 50,
+          background: 'transparent',
+          border: 'none',
+          color: '#4b5563',
+          fontSize: '0.75rem',
+          cursor: 'pointer',
+          padding: '0.25rem 0.5rem',
+          borderRadius: '0.375rem',
+          transition: 'color 0.2s',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#9ca3af')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#4b5563')}
+      >
+        ← Home
+      </button>
+
       <NetWorthBar
         netWorth={playerState.netWorth}
         year={playerState.currentYear}
@@ -287,6 +336,11 @@ export default function GamePage() {
           onContinue={handleContinue}
           netWorthDelta={netWorthDelta}
         />
+      )}
+
+      {/* Save game button — visible during decision and fact phases */}
+      {(phase === 'decision' || phase === 'fact') && (
+        <SaveButton playerState={playerState} />
       )}
     </div>
   )

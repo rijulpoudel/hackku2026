@@ -87,6 +87,7 @@ export function DecisionScreen({ decision, onChoice, chosenIndex }: Props) {
                 onSelect={() => chosenIndex === null && onChoice(i)}
                 isChosen={chosenIndex === i}
                 isDisabled={chosenIndex !== null && chosenIndex !== i}
+                anyChosen={chosenIndex !== null}
               />
             </motion.div>
           ))}
