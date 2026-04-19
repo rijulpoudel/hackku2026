@@ -149,25 +149,26 @@
   display: block;
 }
 
-/* Stepped placement offsets */
-.plate-3 {
-  bottom: 55px;
-  right: -180px;
-}
-
-.plate-2 {
-  bottom: calc(30px + 85px);
-  right: -40px;
+/* Stepped placement — left-based so plates start from the left edge of the
+   right section and cascade diagonally right+down, filling the visual gap */
+.plate-0 {
+  bottom: 195px;
+  left: 5%;
 }
 
 .plate-1 {
-  bottom: calc(30px + 115px);
-  right: 100px;
+  bottom: 145px;
+  left: 20%;
 }
 
-.plate-0 {
-  bottom: calc(30px + 165px);
-  right: 240px;
+.plate-2 {
+  bottom: 115px;
+  left: 35%;
+}
+
+.plate-3 {
+  bottom: 55px;
+  left: 50%;
 }
 
 /* Selection marker */
