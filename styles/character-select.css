@@ -6,7 +6,6 @@
   --color-navy: #2E385F;
   --desc-box-width: 350px;
   --desc-box-height: 270px;
-  --plate-width: 310px;
 }
 
 .character-select-wrapper {
@@ -129,7 +128,8 @@
   padding: 0;
   cursor: pointer;
   position: absolute;
-  width: var(--plate-width);
+  /* fit-content so the hit area matches the visible image exactly */
+  width: fit-content;
   height: auto;
   transition: filter 300ms ease;
   filter: brightness(0.9);
@@ -142,8 +142,10 @@
 }
 
 .plate-img {
-  width: 40%;
+  /* Explicit size — no percentage so it doesn't depend on the parent width */
+  width: 130px;
   height: auto;
+  display: block;
 }
 
 /* Stepped placement offsets */
