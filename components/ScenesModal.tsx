@@ -18,6 +18,7 @@ const CHAR_IMAGES: Record<CharacterType, string> = {
   alex: '/your_scence/alex.svg',
   jordan: '/your_scence/jordan.svg',
   sam: '/your_scence/sam.svg',
+  custom: '/your_scence/alex.svg',
 }
 
 export function ScenesModal({ onClose }: Props) {
