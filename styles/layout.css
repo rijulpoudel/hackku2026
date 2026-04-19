@@ -3,26 +3,92 @@
    ============================================ */
 
 .app-body {
-  @apply bg-[#1a1a1a] text-white antialiased;
+  background: url('/landing/backg.svg') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .page-wrapper {
-  @apply min-h-screen bg-[#1a1a1a] text-white;
+  min-height: 100vh;
 }
 
 .page-center {
   @apply min-h-screen flex flex-col items-center justify-center px-6 py-16;
 }
 
+/* ── Loading Screen (butterfly progress bar) ─────────────────────────────── */
 .page-loading {
-  @apply min-h-screen bg-[#1a1a1a] flex items-center justify-center;
+  min-height: 100vh;
+  background-color: #4f91d0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  z-index: 9999;
+  position: relative;
 }
 
+.loading-slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 60%;
+  max-width: 500px;
+}
+
+.loading-number {
+  font-family: 'HYWenHei', system-ui, sans-serif;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-shadow: 0 4px 20px rgba(255, 255, 255, 0.4);
+}
+
+.loading-bar-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 12px #fff;
+}
+
+.loading-butterfly-slider {
+  position: absolute;
+  top: calc(100% + 5px);
+  transform: translateX(-50%);
+}
+
+.loading-butterfly-img {
+  width: 50px;
+  height: auto;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.827));
+  animation: flap 0.3s infinite alternate ease-in-out;
+}
+
+@keyframes flap {
+  0%   { transform: scaleY(1) rotate(5deg); }
+  100% { transform: scaleY(0.7) rotate(-5deg); }
+}
+
+/* ── Verdict / other page wrappers ───────────────────────────────────────── */
 .page-loading-verdict {
   @apply min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center gap-4;
 }
 
-/* Leaderboard phase wrapper in page.tsx */
+/* ── Leaderboard ─────────────────────────────────────────────────────────── */
 .leaderboard-phase {
   @apply min-h-screen flex flex-col items-center justify-center px-6 py-16;
 }
@@ -35,7 +101,7 @@
   @apply fixed bottom-6 right-6 text-gray-600 text-xs hover:text-gray-400 transition-colors;
 }
 
-/* Global Banner Styles */
+/* ── Global Banner ───────────────────────────────────────────────────────── */
 .global-banner {
   position: absolute;
   top: 10px;
@@ -80,7 +146,7 @@
 
 .global-bush {
   position: fixed;
-  bottom: -45px;
+  bottom: -59px;
   right: 100px;
   z-index: 28;
   width: 28vw;
@@ -105,7 +171,7 @@
   pointer-events: none;
 }
 
-/* Credits Modal */
+/* ── Credits Modal ───────────────────────────────────────────────────────── */
 .credits-backdrop {
   position: fixed;
   inset: 0;

@@ -14,21 +14,9 @@
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
-  background-color: #020023;
-}
-
-.landing-bg-layer {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  background-repeat: no-repeat;
-  object-fit: scale-down;
-  background-size: cover;
-  background-image: url('/landing/backg.svg');
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .landing-content {
@@ -60,7 +48,7 @@
 .landing-buttons-group {
   position: absolute;
   right: 13%;
-  top: 29%;
+  top: 32%;
   z-index: 30;
   display: flex;
   width: 25%;
@@ -100,7 +88,7 @@
   flex-direction: column;
   gap: 1vw;
   font-family: 'HYWenHei', system-ui, -apple-system, sans-serif;
-  color: #47617D;
+  color: #537292;
 }
 
 .landing-book-heading {
@@ -131,7 +119,7 @@
   font-weight: 800;
   font-size: 1vw;
   min-width: 4.5vw;
-  color: #47617D;
+  color: #537292;
 }
 
 .stat-label {

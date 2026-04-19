@@ -15,8 +15,6 @@ interface Props {
 export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
   return (
     <main className="landing-main">
-      <div className="landing-bg-layer" />
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -24,12 +22,16 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
         className="landing-content"
       >
         <div className="landing-book-wrapper">
-          <motion.div 
+          <motion.div
             className="landing-butterfly"
-            animate={{ 
-              rotate: [0, -3, 0, 3, 0], 
+            animate={{
+              rotate: [0, -3, 0, 3, 0],
               scaleY: [1, 1.05, 1, 0.95, 1],
-              filter: ['brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))', 'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))', 'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))']
+              filter: [
+                'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))',
+                'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+              ],
             }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -40,11 +42,15 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
             <Image src="/landing/funtextbg.svg" alt="Fun Text" width={600} height={120} className="landing-responsive-img" />
           </div>
 
-          <motion.div 
+          <motion.div
             className="landing-constellation"
-            animate={{ 
-              opacity: [0.3, 1, 0.3], 
-              filter: ['brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))', 'brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.9))', 'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))']
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              filter: [
+                'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                'brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.9))',
+                'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+              ],
             }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -66,23 +72,23 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               You just graduated with $2,100 in savings and $34,000 in student loans. Make 12 years of financial decisions. See how they compound.
             </p>
             <div className="landing-book-stats">
-               <div className="stat-item">
-                 <span className="stat-value">-$31,900</span>
-                 <span className="stat-label">Starting net worth</span>
-               </div>
-               <div className="stat-item">
-                 <span className="stat-value">12</span>
-                 <span className="stat-label">Years to play</span>
-               </div>
-               <div className="stat-item">
-                 <span className="stat-value">12+</span>
-                 <span className="stat-label">Decisions</span>
-               </div>
+              <div className="stat-item">
+                <span className="stat-value">-$31,900</span>
+                <span className="stat-label">Starting net worth</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">12</span>
+                <span className="stat-label">Years to play</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">12+</span>
+                <span className="stat-label">Decisions</span>
+              </div>
             </div>
           </div>
 
           <div className="landing-buttons-group">
-            {/* Play — start new game */}
+            {/* Play — new game */}
             <motion.button
               type="button"
               aria-label="Play"
@@ -94,7 +100,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               <Image src="/landing/play.svg" alt="Play" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Continue — resume saved game */}
+            {/* Continue — resume in-progress session */}
             <motion.button
               type="button"
               aria-label="Continue"
@@ -107,7 +113,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Scene — show leaderboard */}
+            {/* Scene — leaderboard */}
             <motion.button
               type="button"
               aria-label="Scene"
@@ -119,7 +125,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               <Image src="/landing/scene.svg" alt="Scene" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Load Scenes — opens saved games modal */}
+            {/* Load Scenes — saved games modal */}
             <motion.button
               type="button"
               aria-label="Load Scenes"
