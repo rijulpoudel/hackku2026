@@ -107,7 +107,7 @@
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 100;
   width: 40vw;
   pointer-events: none;
   display: flex;

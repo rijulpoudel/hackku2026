@@ -11,6 +11,7 @@
 <path d="M58.5 32.2924C58.5 31.1878 59.3954 30.2924 60.5 30.2924H69.5C70.6046 30.2924 71.5 31.1878 71.5 32.2924V37.2924C71.5 38.397 70.6046 39.2924 69.5 39.2924H60.5C59.3954 39.2924 58.5 38.397 58.5 37.2924V32.2924Z" fill="#4A4A4A"/>
 <path d="M80.5 30.2925C81.8962 31.6445 82.3371 32.8153 82.466 34.0425C82.5992 35.3113 82.3768 36.6404 81.1553 38.2925" stroke="#4A4A4A" stroke-width="3" stroke-linecap="round"/>
 <path d="M85.5 28.2925C86.8962 30.3206 87.3371 32.0767 87.466 33.9175C87.5992 35.8207 87.3768 37.8143 86.1553 40.2925" stroke="#4A4A4A" stroke-width="3" stroke-linecap="round"/>
+<line x1="63.6191" y1="24.4037" x2="84.4037" y2="43.3809" stroke="#909090" stroke-width="3" stroke-linecap="round"/>
 <defs>
 <filter id="filter0_g_174_41" x="0" y="0" width="148.935" height="69" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
