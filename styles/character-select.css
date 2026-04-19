@@ -143,30 +143,31 @@
 }
 
 .plate-img {
-  width: 220px;
+  width: 150px;
   height: auto;
   display: block;
 }
 
-/* Stepped placement — wider gaps horizontally and vertically */
+/* Diagonal cascade — each card steps 100px right and 90px down so the
+   face (top of card) is always visible above the next card's body */
 .plate-0 {
-  bottom: 260px;
-  left: 3%;
+  bottom: 270px;
+  left: 1%;
 }
 
 .plate-1 {
-  bottom: 175px;
-  left: 20%;
+  bottom: 180px;
+  left: 22%;
 }
 
 .plate-2 {
-  bottom: 105px;
-  left: 37%;
+  bottom: 90px;
+  left: 43%;
 }
 
 .plate-3 {
-  bottom: 35px;
-  left: 54%;
+  bottom: 30px;
+  left: 64%;
 }
 
 /* Selection marker */
