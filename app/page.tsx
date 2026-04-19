@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { LandingScreen } from '@/components/LandingScreen'
 import { CharacterSelect } from '@/components/CharacterSelect'
 import { Leaderboard } from '@/components/Leaderboard'
-import { CreditsModal } from '@/components/CreditsModal'
 import { LoadGameModal } from '@/components/LoadGameModal'
 import { ScenesModal } from '@/components/ScenesModal'
 import { LoadingScreen } from '@/components/LoadingScreen'
@@ -13,7 +12,7 @@ import { CharacterType } from '@/types/game'
 import { hasSaves } from '@/lib/save-game'
 import { playSfx } from '@/lib/audio'
 
-type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame' | 'scenes'
+type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'loadgame' | 'scenes'
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>('loading')
@@ -70,7 +69,10 @@ export default function Home() {
     onContinue: handleContinue,
     onLeaderboard: () => setPhase('leaderboard'),
     onScenes: () => setPhase('scenes'),
-    onCredits: () => setPhase('credits'),
+    onCredits: () => {
+      playSfx('click')
+      router.push('/credits')
+    },
     onLoadGame: handleLoadGame,
     hasSavedGame,
     hasSaveSlots: hasSaves(),
@@ -117,14 +119,6 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Credits modal — overlays landing ────────────── */}
-      {phase === 'credits' && (
-        <>
-          <LandingScreen {...landingProps} />
-          <CreditsModal onClose={() => setPhase('landing')} />
-        </>
-      )}
 
       {/* ── Load game page — standalone ──────────── */}
       {phase === 'loadgame' && (
