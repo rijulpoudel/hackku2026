@@ -58,21 +58,42 @@ export async function narrateScene(text: string): Promise<void> {
 
 // ─── Background Music ─────────────────────────────────────────────────────────
 let bgMusic: Howl | null = null;
+let bgMusicScheduled = false;
 
-export function startBgMusic() {
-  if (typeof window === "undefined") return;
-  if (bgMusic) return; // Already playing
-
+function _playBgMusic() {
+  if (bgMusic) return;
   bgMusic = new Howl({
     src: ["/audio/bg-music.mp3"],
     loop: true,
-    volume: 0.18, // Quiet underneath the narration
-    html5: true,
+    volume: 0.18,
+    html5: true, // streams without Web Audio API — avoids autoplay block
     onloaderror: () => {
-      bgMusic = null; // File not present — skip silently
+      bgMusic = null;
     },
   });
   bgMusic.play();
+}
+
+export function startBgMusic() {
+  if (typeof window === "undefined") return;
+  if (bgMusic || bgMusicScheduled) return;
+
+  bgMusicScheduled = true;
+
+  // Try immediately (works if there was already a user gesture on this page)
+  _playBgMusic();
+
+  // Also hook the next click in case autoplay was blocked — starts music on
+  // the very first tap/click the user makes, which always has user-activation.
+  const unlock = () => {
+    if (!bgMusic) _playBgMusic();
+    window.removeEventListener("click", unlock);
+    window.removeEventListener("keydown", unlock);
+    window.removeEventListener("touchstart", unlock);
+  };
+  window.addEventListener("click", unlock, { once: true });
+  window.addEventListener("keydown", unlock, { once: true });
+  window.addEventListener("touchstart", unlock, { once: true });
 }
 
 export function stopBgMusic() {
@@ -101,6 +122,11 @@ const SFX_FILES: Record<string, string> = {
 
 export function playSfx(key: string) {
   if (typeof window === "undefined") return;
+
+  // Resume Web Audio API context if suspended (production autoplay policy)
+  if (Howler.ctx && Howler.ctx.state === "suspended") {
+    Howler.ctx.resume();
+  }
 
   if (!sfx[key] && SFX_FILES[key]) {
     sfx[key] = new Howl({
