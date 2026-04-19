@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { CharacterType } from '@/types/game'
 import { playSfx } from '@/lib/audio'
+import { VoiceRecorder } from '@/components/VoiceRecorder'
+import { CustomCharacterForm, CustomConfig } from '@/components/CustomCharacterForm'
 
 const CHARACTERS: Array<{
   type: CharacterType
@@ -58,6 +60,40 @@ interface Props {
 
 export function CharacterSelect({ onSelect }: Props) {
   const [hoveredChar, setHoveredChar] = useState(CHARACTERS[0])
+  // After picking a character, show the voice step before starting
+  const [pendingChar, setPendingChar] = useState<typeof CHARACTERS[0] | null>(null)
+  // Custom character form
+  const [showCustomForm, setShowCustomForm] = useState(false)
+
+  function handleCharClick(char: typeof CHARACTERS[0]) {
+    playSfx('click')
+    // Normal characters go straight to the game — no voice step
+    sessionStorage.removeItem('launch_custom_voice_id')
+    onSelect(char.type, char.name)
+  }
+
+  function confirmAndStart(char: typeof CHARACTERS[0]) {
+    onSelect(char.type, char.name)
+  }
+
+  function handleCustomComplete(config: CustomConfig) {
+    // Store config so game/page.tsx can build the initial state from it
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_custom_config', JSON.stringify(config))
+    }
+    // Treat as a "character" selection — voice step follows
+    const customChar = {
+      type: 'custom' as CharacterType,
+      name: config.name,
+      title: config.career,
+      plateImg: '',
+      salary: config.salary.toString(),
+      netWorth: (config.savings - config.loanBalance).toString(),
+      description: '',
+    }
+    setShowCustomForm(false)
+    setPendingChar(customChar)
+  }
 
   return (
     <motion.div
@@ -75,6 +111,38 @@ export function CharacterSelect({ onSelect }: Props) {
           className="frame-board-img"
           priority
         />
+
+        {/* Top Right Custom Action Button */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: '8%',
+            right: '5%',
+            zIndex: 40,
+            display: 'flex',
+          }}
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => { playSfx('click'); setShowCustomForm(true) }}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              display: 'flex',
+              filter: 'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.15))'
+            }}
+          >
+            <Image
+              src="/your_scence/custom.svg"
+              alt="Custom Action"
+              width={90}
+              height={42}
+            />
+          </motion.button>
+        </div>
 
         <div className="character-content-overlay">
           {/* Left: title + description box */}
@@ -147,7 +215,7 @@ export function CharacterSelect({ onSelect }: Props) {
                 key={char.type}
                 className={`character-plate-button plate-${i}`}
                 onMouseEnter={() => { setHoveredChar(char); playSfx('hover') }}
-                onClick={() => onSelect(char.type, char.name)}
+                onClick={() => handleCharClick(char)}
                 whileHover={{ scale: 1.08, x: -15 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -164,6 +232,94 @@ export function CharacterSelect({ onSelect }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Voice step — slides up over the board after picking a character */}
+      <AnimatePresence>
+        {pendingChar && (
+          <motion.div
+            key="voice-step"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.55)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 50,
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 24 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                alignItems: 'center',
+                maxWidth: 380,
+                width: '90%',
+              }}
+            >
+              {/* Character confirmation header */}
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.14)',
+                borderRadius: '1rem',
+                padding: '1rem 1.5rem',
+                width: '100%',
+                textAlign: 'center',
+                color: 'white',
+                fontFamily: `'HYWenHei', system-ui, sans-serif`,
+              }}>
+                <p style={{ fontSize: '0.7rem', opacity: 0.6, marginBottom: '0.2rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Your story begins
+                </p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>{pendingChar.name}</p>
+                <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{pendingChar.title} · {pendingChar.netWorth}</p>
+              </div>
+
+              {/* Voice recorder */}
+              <VoiceRecorder
+                characterName={pendingChar.name}
+                onCloned={() => confirmAndStart(pendingChar)}
+                onSkip={() => confirmAndStart(pendingChar)}
+              />
+
+              {/* Back link */}
+              <button
+                onClick={() => setPendingChar(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(255,255,255,0.45)',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                  textDecoration: 'underline',
+                }}
+              >
+                ← Change character
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom character form — full-screen modal */}
+      <AnimatePresence>
+        {showCustomForm && (
+          <CustomCharacterForm
+            onComplete={handleCustomComplete}
+            onBack={() => setShowCustomForm(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

@@ -1,8 +1,108 @@
 import { GeneratedDecision } from "@/types/game";
 import { buildImageUrl } from "./image";
 
-// Fallback decisions for Years 4-12 if Gemini fails
+// Fallback decisions for ALL years if Gemini fails
+// Years 1-3 are generic (used only for custom characters; preset characters use anchor decisions)
 export const FALLBACK_DECISIONS: Record<number, GeneratedDecision> = {
+  1: {
+    scenario: "Your first paycheck arrives and it's $380 less than expected every month.",
+    question: "What do you do about the missing $380?",
+    financial_term: "W-4 and Tax Withholding",
+    definition: "Your W-4 tells your employer how much tax to withhold from each paycheck. Wrong settings mean too much taken out all year — or a surprise bill in April.",
+    scenario_type: "tax",
+    choices: [
+      {
+        label: "Best",
+        title: "Go to HR and update your W-4 today",
+        impact: "Correct take-home starting next paycheck, no surprises in April",
+        lesson: "You control your withholding. Review your W-4 every time your life changes.",
+        net_worth_change: 200,
+      },
+      {
+        label: "Neutral",
+        title: "Wait until tax season to sort it out",
+        impact: "Overpay all year, get a refund in April",
+        lesson: "A big refund sounds good but means you gave the government a free loan all year.",
+        net_worth_change: 0,
+      },
+      {
+        label: "Risky",
+        title: "Assume it's correct and ignore it",
+        impact: "Risk owing money and penalties in April",
+        lesson: "Ignoring withholding errors compounds monthly — fix it at the source.",
+        net_worth_change: -400,
+      },
+    ],
+    image_prompt: "young professional looking at first paycheck stub with surprised expression at office desk",
+    image_url: buildImageUrl("young professional looking at first paycheck stub with surprised expression at office desk"),
+    fact_after: "78% of workers never update their W-4 after being hired. The average first paycheck surprise is $300–$600. — IRS",
+  },
+  2: {
+    scenario: "April 14th. Your tax forms are on the table. You've never filed before.",
+    question: "How do you handle your first ever tax return?",
+    financial_term: "Filing Your Taxes — The W-2 Form",
+    definition: "Your W-2 shows total earnings and taxes withheld. You file a return by April 15th to confirm what you owe or what you get back. Free software makes this a 45-minute task.",
+    scenario_type: "tax",
+    choices: [
+      {
+        label: "Best",
+        title: "File free with IRS Free File software",
+        impact: "$0 cost. Done in 45 minutes. Refund in 10 days.",
+        lesson: "IRS Free File is free for incomes under $73,000. Use it every year.",
+        net_worth_change: 1200,
+      },
+      {
+        label: "Smart",
+        title: "Pay H&R Block $200 to file for you",
+        impact: "Done correctly, costs more than necessary for a simple return",
+        lesson: "Worth paying for when you have freelance income or major life changes.",
+        net_worth_change: 1000,
+      },
+      {
+        label: "Danger",
+        title: "Skip filing this year entirely",
+        impact: "5% penalty per month on any amount owed — up to 25% total",
+        lesson: "Not filing is illegal. The IRS already has your W-2. They will find you.",
+        net_worth_change: -800,
+      },
+    ],
+    image_prompt: "person at kitchen table with W-2 tax form and laptop nervous but focused first time filing taxes",
+    image_url: buildImageUrl("person at kitchen table with W-2 tax form and laptop nervous but focused first time filing"),
+    fact_after: "Over 15 million Americans miss the April deadline each year. Late penalty is 5% per month up to 25% of unpaid tax. — IRS 2024",
+  },
+  3: {
+    scenario: "Open enrollment closes Friday. Your 401k form has been sitting in your email for three weeks.",
+    question: "Do you finally enroll in your company 401k with 5% employer match?",
+    financial_term: "401k Employer Match",
+    definition: "Your employer adds free money matching your contributions up to a set percentage. At 5% match on a $45k salary, that's $2,250/year free. Over 30 years at 7% growth, that becomes $226,000.",
+    scenario_type: "savings",
+    choices: [
+      {
+        label: "Best",
+        title: "Contribute 5% — capture the full match",
+        impact: "$2,250/year free from employer. $226,000 at retirement.",
+        lesson: "An employer match is a 100% instant return. Nothing in finance beats it.",
+        net_worth_change: 4500,
+      },
+      {
+        label: "Neutral",
+        title: "Contribute 3% — get partial match only",
+        impact: "Partial match. Leave $900/year free money on the table.",
+        lesson: "Better than nothing. Increase to 5% as soon as possible.",
+        net_worth_change: 2700,
+      },
+      {
+        label: "Worst",
+        title: "Skip enrollment again, need cash now",
+        impact: "Lose $2,250 employer match this year — every year you skip.",
+        lesson: "The cost isn't $2,250 once. Missing 30 years of compound growth = $226,000 gone.",
+        net_worth_change: 0,
+      },
+    ],
+    image_prompt: "person at work computer staring at 401k enrollment form hesitating with mouse cursor over submit button",
+    image_url: buildImageUrl("person at work computer staring at 401k enrollment form hesitating with mouse cursor over submit button"),
+    fact_after: "55% of Americans with 401k access don't contribute enough to get the full employer match, leaving an average $1,336/year unclaimed. — Vanguard 2024",
+  },
   4: {
     scenario:
       "You've been at your job two years. A recruiter contacts you with an offer 20% higher.",

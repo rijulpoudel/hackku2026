@@ -3,8 +3,14 @@ import { Howl, Howler } from "howler";
 // ─── Narrator (ElevenLabs streamed audio) ────────────────────────────────────
 let currentNarrator: HTMLAudioElement | null = null;
 let currentNarratorUrl: string | null = null;
+let pendingNarrationTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function stopNarration() {
+  // Cancel any queued narration that hasn't started yet
+  if (pendingNarrationTimer !== null) {
+    clearTimeout(pendingNarrationTimer);
+    pendingNarrationTimer = null;
+  }
   if (currentNarrator) {
     currentNarrator.pause();
     currentNarrator.src = "";
@@ -16,17 +22,35 @@ export function stopNarration() {
   }
 }
 
+/**
+ * Schedule a narration after `delayMs`. Cancels any previously scheduled
+ * or currently playing narration first, so only one narration can ever
+ * be pending or playing at a time.
+ */
+export function scheduleNarration(text: string, delayMs: number): void {
+  if (typeof window === "undefined") return;
+  // Kill anything currently playing or queued
+  stopNarration();
+  pendingNarrationTimer = setTimeout(() => {
+    pendingNarrationTimer = null;
+    narrateScene(text);
+  }, delayMs);
+}
+
 export async function narrateScene(text: string): Promise<void> {
   if (typeof window === "undefined") return;
 
   // Always stop whatever is currently playing before starting new narration
   stopNarration();
 
+  // Use the player's cloned voice if they recorded one this session
+  const customVoiceId = sessionStorage.getItem("launch_custom_voice_id") || undefined;
+
   try {
     const res = await fetch("/api/narrate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, voiceId: customVoiceId }),
     });
 
     if (!res.ok) return; // Silently skip if ElevenLabs is not configured

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { text } = await req.json();
+  const { text, voiceId: customVoiceId } = await req.json();
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
-  const voiceId = process.env.ELEVENLABS_VOICE_ID;
+  // Use the player's cloned voice if provided, otherwise fall back to env default
+  const voiceId = customVoiceId || process.env.ELEVENLABS_VOICE_ID;
 
   if (!apiKey || !voiceId || apiKey === "your_elevenlabs_key") {
     return NextResponse.json(

@@ -2,7 +2,8 @@ export type CharacterType =
   | "maya"   // PhD Student → Academic/Research
   | "alex"   // Corporate Tech
   | "jordan" // Freelance Creative
-  | "sam";   // Public School Teacher
+  | "sam"    // Public School Teacher
+  | "custom"; // Player-configured character
 
 export type ChoiceLabel =
   | "Best"

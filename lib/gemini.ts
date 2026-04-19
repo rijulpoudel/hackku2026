@@ -35,7 +35,10 @@ function pickScenarioType(playerState: PlayerState): string {
 export async function generateNextDecision(
   playerState: PlayerState,
 ): Promise<GeneratedDecision> {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    generationConfig: { responseMimeType: "application/json" } as never,
+  });
 
   const scenarioType = pickScenarioType(playerState);
 
@@ -113,14 +116,19 @@ Return ONLY valid JSON. No markdown. No explanation. Exactly this structure:
 
   const result = await model.generateContent(prompt);
   const text = result.response.text();
-  const clean = text.replace(/```json|```/g, "").trim();
+  // Strip any markdown fences Gemini might still include
+  const clean = text.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
 
   try {
     const decision = JSON.parse(clean) as GeneratedDecision;
+    if (!decision.choices || !Array.isArray(decision.choices) || decision.choices.length === 0) {
+      throw new Error("Parsed object has no choices array");
+    }
     decision.image_url = buildImageUrl(decision.image_prompt);
     return decision;
-  } catch {
-    throw new Error(`Gemini returned invalid JSON: ${text.slice(0, 200)}`);
+  } catch (parseErr) {
+    console.error("Gemini JSON parse failed. Raw text:", text.slice(0, 400));
+    throw new Error(`Gemini returned invalid JSON: ${String(parseErr)}`);
   }
 }
 

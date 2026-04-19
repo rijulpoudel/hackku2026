@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PlayerState, GeneratedDecision, CharacterType } from '@/types/game'
-import { narrateScene, stopNarration, playChoiceResult, playSfx, startBgMusic, toggleMute, isMuted } from '@/lib/audio'
+import { narrateScene, scheduleNarration, stopNarration, playChoiceResult, playSfx, startBgMusic, toggleMute, isMuted } from '@/lib/audio'
 import { saveGame } from '@/lib/save-game'
 import { YearTransition } from '@/components/YearTransition'
 import { DecisionLoading } from '@/components/DecisionLoading'
@@ -73,10 +73,48 @@ const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
     isGradStudent: false,
     hasLLC: false,
   },
+  // Custom: placeholder — overridden in buildInitialState from sessionStorage
+  custom: {
+    salary: 45000,
+    netWorth: -28000,
+    savings: 2000,
+    loanBalance: 30000,
+    monthlyExpenses: 2400,
+    isFreelancing: false,
+    isPSLFEligible: false,
+    isPensionEnrolled: false,
+    isGradStudent: false,
+    hasLLC: false,
+  },
 }
 
 function buildInitialState(character: CharacterType, name: string): PlayerState {
-  const cfg = CHARACTER_CONFIG[character]
+  let cfg = CHARACTER_CONFIG[character]
+
+  // For custom characters, override config from the form data stored in sessionStorage
+  if (character === 'custom' && typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem('launch_custom_config')
+      if (raw) {
+        const custom = JSON.parse(raw)
+        const monthlyExpenses = Math.round(custom.salary / 12 * 0.55) || 1800
+        cfg = {
+          salary: custom.salary,
+          netWorth: custom.savings - custom.loanBalance,
+          savings: custom.savings,
+          loanBalance: custom.loanBalance,
+          monthlyExpenses,
+          isFreelancing: custom.isFreelancing ?? false,
+          isPSLFEligible: custom.isPSLFEligible ?? false,
+          isPensionEnrolled: false,
+          isGradStudent: false,
+          hasLLC: false,
+        }
+        name = custom.name || name
+      }
+    } catch { /* use placeholder defaults */ }
+  }
+
   return {
     userId: `guest_${Date.now()}`,
     name,
@@ -90,14 +128,18 @@ function buildInitialState(character: CharacterType, name: string): PlayerState 
     retirement401k: 0,
     creditCardDebt: 0,
     monthlyExpenses: cfg.monthlyExpenses,
-    ownsHome: false,
+    ownsHome: character === 'custom'
+      ? (() => { try { return JSON.parse(sessionStorage.getItem('launch_custom_config') || '{}').ownsHome ?? false } catch { return false } })()
+      : false,
     hasEmergencyFund: false,
     isFreelancing: cfg.isFreelancing,
     hasInvested: false,
     took401kMatch: false,
     filedTaxesCorrectly: false,
     hasNegotiatedSalary: false,
-    hasChildren: false,
+    hasChildren: character === 'custom'
+      ? (() => { try { return JSON.parse(sessionStorage.getItem('launch_custom_config') || '{}').hasChildren ?? false } catch { return false } })()
+      : false,
     hadJobLoss: false,
     isPSLFEligible: cfg.isPSLFEligible,
     isPensionEnrolled: cfg.isPensionEnrolled,
@@ -125,12 +167,18 @@ const getSceneImage = (char: CharacterType, year: number): string => {
     sam: {
       1: '1 6.svg', 2: '2 4.svg', 3: '3 4.svg', 4: '44 2.svg', 5: '5 4.svg', 6: '6 4.svg',
       7: '7 4.svg', 8: '8 4.svg', 9: '9 4.svg', 10: '10 3.svg', 11: '10 3.svg', 12: '10 3.svg',
-    }
+    },
+    // Custom uses Alex's scene images as a neutral fallback
+    custom: {
+      1: '1.svg', 2: '2.svg', 3: '3.svg', 4: '4.svg', 5: '4.svg', 6: '6 2.svg',
+      7: '7 2.svg', 8: '8 2.svg', 9: '9 2.svg', 10: '10 1.svg', 11: '10 1.svg', 12: '10 1.svg',
+    },
   }
 
-  const charName = char.charAt(0).toUpperCase() + char.slice(1)
-  const filename = Map[char]?.[year] || Map[char]?.[1] || '1.svg'
-  return `/scenes/${charName}/${filename}`
+  // Custom character reuses Alex's scene folder
+  const folderChar = char === 'custom' ? 'Alex' : char.charAt(0).toUpperCase() + char.slice(1)
+  const filename = Map[char]?.[year] || Map[char === 'custom' ? 'alex' : char]?.[1] || '1.svg'
+  return `/scenes/${folderChar}/${filename}`
 }
 
 export default function GamePage() {
@@ -151,11 +199,33 @@ export default function GamePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state),
       })
-      const decision: GeneratedDecision = await res.json()
+      const data = await res.json()
+      // Guard against malformed Gemini responses (missing choices array)
+      if (!data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
+        console.error('Decision missing choices array:', data)
+        setPhase('loading')
+        // Retry once
+        const retry = await fetch('/api/generate-decision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state),
+        })
+        const retryData = await retry.json()
+        if (!retryData.choices || !Array.isArray(retryData.choices) || retryData.choices.length === 0) {
+          console.error('Retry also missing choices, staying on loading')
+          setPhase('decision') // will render nothing since currentDecision is null
+          return
+        }
+        setCurrentDecision(retryData)
+        setPhase('decision')
+        scheduleNarration(retryData.scenario, 400)
+        return
+      }
+      const decision: GeneratedDecision = data
       setCurrentDecision(decision)
       setPhase('decision')
 
-      setTimeout(() => narrateScene(decision.scenario), 400)
+      scheduleNarration(decision.scenario, 400)
     } catch (err) {
       console.error('Failed to fetch decision:', err)
       setPhase('decision')
@@ -237,7 +307,7 @@ export default function GamePage() {
     setPhase('transition')
 
     if (nextYear > 1) {
-      setTimeout(() => narrateScene('Time passes. The choices you made are already compounding.'), 300)
+      scheduleNarration('Time passes. The choices you made are already compounding.', 300)
     }
     setTimeout(() => fetchNextDecision(newState), 2000)
   }
@@ -652,7 +722,7 @@ export default function GamePage() {
                             </p>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8vw', marginTop: 'auto', marginBottom: '2vw' }}>
-                              {currentDecision.choices.map((choice, i) => (
+                              {(currentDecision.choices ?? []).map((choice, i) => (
                                 <button
                                   key={i}
                                   onClick={() => handleChoice(i)}
