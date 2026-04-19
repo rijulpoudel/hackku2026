@@ -79,8 +79,16 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
     setState('processing')
 
     const mimeType = recorder.mimeType || 'audio/webm'
-    const ext = mimeType.includes('mp4') ? 'mp4' : 'webm'
+    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm'
     const blob = new Blob(chunksRef.current, { type: mimeType })
+
+    console.log('[VoiceRecorder] blob:', blob.size, 'bytes,', mimeType, `(${ext})`)
+
+    if (blob.size < 5000) {
+      setErrorMsg('Recording was too short or empty — please try again and speak for at least 15 seconds.')
+      setState('error')
+      return
+    }
 
     const form = new FormData()
     form.append('name', `${characterName.replace(/\s+/g, '_')}_${Date.now()}`)
@@ -90,8 +98,10 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
       const res = await fetch('/api/clone-voice', { method: 'POST', body: form })
       const data = await res.json()
 
+      console.log('[VoiceRecorder] API response:', res.status, data)
+
       if (!res.ok || !data.voice_id) {
-        throw new Error(data.error || 'Cloning failed')
+        throw new Error(data.error || 'Voice cloning failed — check server logs')
       }
 
       sessionStorage.setItem('launch_custom_voice_id', data.voice_id)
@@ -99,6 +109,7 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
       setTimeout(() => onCloned(data.voice_id), 900)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Voice cloning failed. Try again or skip.'
+      console.error('[VoiceRecorder] clone error:', msg)
       setErrorMsg(msg)
       setState('error')
     }
@@ -174,17 +185,19 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
             </div>
 
             <p style={{ fontSize: '0.68rem', opacity: 0.6 }}>
-              {seconds < 30
-                ? `Keep talking — ${30 - seconds}s until minimum`
-                : 'Looking good! Stop whenever you\'re ready.'}
+              {seconds < 15
+                ? `Keep talking — ${15 - seconds}s minimum remaining`
+                : seconds < 30
+                ? `Good — ${30 - seconds}s more for best quality`
+                : "Excellent! Stop whenever you're ready."}
             </p>
 
             <button
               onClick={stopAndClone}
-              disabled={seconds < 5}
-              style={btn(seconds >= 5 ? '#22c55e' : '#374151')}
+              disabled={seconds < 15}
+              style={btn(seconds >= 15 ? '#22c55e' : '#374151')}
             >
-              {seconds < 5 ? 'Recording…' : '■ Stop & Clone My Voice'}
+              {seconds < 15 ? `Recording… (${15 - seconds}s)` : '■ Stop & Clone My Voice'}
             </button>
           </motion.div>
         )}

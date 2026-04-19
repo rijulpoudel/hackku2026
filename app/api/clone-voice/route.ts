@@ -16,11 +16,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 })
     }
 
+    console.log('clone-voice: received file —', file.name, file.type, `${(file.size / 1024).toFixed(1)} KB`)
+
     // ElevenLabs Instant Voice Cloning — POST /v1/voices/add
+    // Use explicit filename with extension so ElevenLabs can detect the format
+    const ext = file.type.includes('mp4') ? 'mp4' : file.type.includes('ogg') ? 'ogg' : 'webm'
+    const filename = `voice_sample.${ext}`
     const elForm = new FormData()
     elForm.append('name', name)
     elForm.append('description', 'Cloned from LAUNCH game player recording')
-    elForm.append('files', file, file.name)
+    elForm.append('files', file, filename)
 
     const res = await fetch('https://api.elevenlabs.io/v1/voices/add', {
       method: 'POST',
@@ -29,15 +34,21 @@ export async function POST(req: NextRequest) {
     })
 
     if (!res.ok) {
-      const err = await res.text()
-      console.error('ElevenLabs voice cloning error:', err)
+      const errText = await res.text()
+      console.error('ElevenLabs voice cloning error — status:', res.status, 'body:', errText)
+      let userMsg = `ElevenLabs error ${res.status}`
+      try {
+        const parsed = JSON.parse(errText)
+        userMsg = parsed?.detail?.message || parsed?.detail || errText
+      } catch { userMsg = errText }
       return NextResponse.json(
-        { error: 'Voice cloning failed', detail: err },
+        { error: userMsg },
         { status: 502 },
       )
     }
 
     const data = await res.json()
+    console.log('ElevenLabs voice cloned OK — voice_id:', data.voice_id)
     // ElevenLabs returns { voice_id: string, name: string }
     return NextResponse.json({ voice_id: data.voice_id })
   } catch (err) {
