@@ -1,46 +1,38 @@
 'use client'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import Image from 'next/image'
 import { CharacterType } from '@/types/game'
 
 const CHARACTERS: Array<{
   type: CharacterType
   title: string
-  subtitle: string
-  salary: string
-  emoji: string
+  plateImg: string
   description: string
 }> = [
   {
-    type: 'employee',
-    title: 'Corporate Employee',
-    subtitle: 'Software company, Austin TX',
-    salary: '$52,000/year',
-    emoji: '💼',
-    description: 'Stable salary. 401k with match. Health insurance. The classic path.',
-  },
-  {
     type: 'freelancer',
     title: 'Freelancer',
-    subtitle: 'Design & web, remote',
-    salary: '$48,000/year',
-    emoji: '🎨',
+    plateImg: '/your_scence/Freelance.svg',
     description: 'Variable income. No benefits. Full control. Self-employment taxes.',
   },
   {
     type: 'student',
     title: 'Grad Student',
-    subtitle: 'Stipend + part-time work',
-    salary: '$28,000/year',
-    emoji: '📚',
+    plateImg: '/your_scence/Grad student.svg',
     description: 'Low income now. High potential later. Unique tax situation.',
   },
   {
     type: 'side-hustler',
     title: 'Side Hustler',
-    subtitle: 'Day job + side business',
-    salary: '$58,000/year',
-    emoji: '🚀',
+    plateImg: '/your_scence/Side hustler.svg',
     description: 'Two income streams. Complex taxes. High upside. High stress.',
+  },
+  {
+    type: 'employee',
+    title: 'Corporate Employee',
+    plateImg: '/your_scence/Corporate employee.svg',
+    description: 'Stable salary. 401k with match. Health insurance. The classic path.',
   },
 ]
 
@@ -49,6 +41,8 @@ interface Props {
 }
 
 export function CharacterSelect({ onSelect }: Props) {
+  const [hoveredChar, setHoveredChar] = useState(CHARACTERS[0])
+
   const handleSelect = (type: CharacterType) => {
     const names: Record<CharacterType, string> = {
       employee: 'Alex',
@@ -60,38 +54,61 @@ export function CharacterSelect({ onSelect }: Props) {
   }
 
   return (
-    <div className="character-select-wrapper">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="character-select-header"
-      >
-        <h2 className="character-select-title">Who are you?</h2>
-        <p className="character-select-subtitle">
-          Every graduate starts differently. Choose your path — it shapes every decision ahead.
-        </p>
-      </motion.div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="character-select-wrapper"
+    >
+      <div className="character-frame-board">
+        <Image 
+          src="/your_scence/Frame_board.svg" 
+          alt="" 
+          width={1200} 
+          height={800} 
+          className="frame-board-img"
+        />
 
-      <div className="character-grid">
-        {CHARACTERS.map((char, i) => (
-          <motion.button
-            key={char.type}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + i * 0.1 }}
-            onClick={() => handleSelect(char.type)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="character-card"
-          >
-            <div className="character-emoji">{char.emoji}</div>
-            <h3 className="character-name">{char.title}</h3>
-            <p className="character-salary">{char.salary}</p>
-            <p className="character-location">{char.subtitle}</p>
-            <p className="character-description">{char.description}</p>
-          </motion.button>
-        ))}
+        <div className="character-content-overlay">
+          <div className="character-left-section">
+            <h2 className="character-pick-title">Pick your story</h2>
+            
+            <div className="character-description-container">
+              <Image 
+                src="/your_scence/Description box.svg" 
+                alt="" 
+                width={400} 
+                height={300} 
+                className="description-box-img"
+              />
+              <div className="description-text-overlay">
+                <p className="description-text">{hoveredChar.description}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="character-right-section">
+            {CHARACTERS.map((char, i) => (
+              <motion.button
+                key={char.type}
+                className={`character-plate-button plate-${i}`}
+                onMouseEnter={() => setHoveredChar(char)}
+                onClick={() => handleSelect(char.type)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Image 
+                  src={char.plateImg} 
+                  alt={char.title} 
+                  width={320} 
+                  height={100} 
+                  className="plate-img"
+                />
+              </motion.button>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

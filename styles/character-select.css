@@ -3,45 +3,151 @@
    ============================================ */
 
 .character-select-wrapper {
-  @apply min-h-screen flex flex-col items-center justify-center px-6 py-16;
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.character-select-header {
-  @apply text-center mb-12;
+.character-frame-board {
+  position: relative;
+  width: 70%;
+  max-width: 1200px;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-.character-select-title {
-  @apply text-3xl font-light text-white mb-3;
+.frame-board-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.character-select-subtitle {
-  @apply text-gray-500 text-sm max-w-md mx-auto;
+.character-content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 5% 8%;
+  /* Inner padding inside the frameboard */
+  display: flex;
+  flex-direction: row;
+  z-index: 20;
 }
 
-.character-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full;
+/* Left side: Heading and Description */
+.character-left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-.character-card {
-  @apply text-left p-5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/8 hover:border-amber-400/30 transition-all duration-200;
+.character-description-container {
+  position: absolute;
+  bottom: 80px;
+  left: 40px;
+  width: 350px;
+  height: 270px;
 }
 
-.character-emoji {
-  @apply text-3xl mb-3;
+.character-pick-title {
+  position: absolute;
+  bottom: 300px;
+  left: 80px;
+  font-family: 'HYWenHei', system-ui, sans-serif;
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 30;
+  white-space: nowrap;
 }
 
-.character-name {
-  @apply text-white font-medium mb-1;
+.description-box-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.character-salary {
-  @apply text-amber-400 text-xs font-medium mb-1;
+.description-text-overlay {
+  position: absolute;
+  top: 40px;
+  left: 35px;
+  right: 35px;
+  bottom: 35px;
+  color: #2E385F;
+  font-family: 'HYWenHei', system-ui, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-y: auto;
 }
 
-.character-location {
-  @apply text-gray-500 text-xs mb-2;
+/* Right side: Plated Characters */
+.character-right-section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-.character-description {
-  @apply text-gray-400 text-xs leading-relaxed;
+.character-plate-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+  width: 310px;
+  /* Scaled plates */
+  height: auto;
+  transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: brightness(0.9);
+  z-index: 25;
+}
+
+.character-plate-button:hover {
+  filter: brightness(1.1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+  z-index: 60;
+  transform: translateX(-10px);
+}
+
+.plate-img {
+  width: 45%;
+  height: auto;
+}
+
+/* Stepped positions - re-calculated for 65% scale */
+.plate-3 {
+  bottom: 30px;
+  right: 0;
+}
+
+.plate-2 {
+  bottom: calc(30px + 68px);
+  right: -123px;
+}
+
+.plate-1 {
+  bottom: calc(30px + 76px);
+  right: 34px;
+}
+
+.plate-0 {
+  bottom: calc(30px + 104px);
+  right: 180px;
+}
+
+
+/* Selection marker or active state if needed */
+.character-plate-button.active {
+  filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  transform: translateX(-10px) scale(1.05);
 }

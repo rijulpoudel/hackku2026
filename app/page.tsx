@@ -31,35 +31,45 @@ export default function Home() {
   }
 
   return (
-    <div className="page-wrapper" style={{ backgroundColor: '#3D70B2' }}>
+    <div className="page-wrapper">
       <AnimatePresence mode="wait">
         {phase === 'loading' && <LoadingScreen key="loading" />}
+        
         {phase === 'landing' && (
           <motion.div
             key="landing"
             initial={{ clipPath: 'circle(0% at 50% 50%)' }}
             animate={{ clipPath: 'circle(150% at 50% 50%)' }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: 'easeInOut' }}
             style={{ width: '100%', height: '100%', position: 'relative' }}
           >
             <LandingScreen onStart={() => setPhase('character')} />
           </motion.div>
         )}
-      </AnimatePresence>
-      {phase === 'character' && (
-        <CharacterSelect onSelect={handleCharacterSelect} />
-      )}
-      {phase === 'leaderboard' && (
-        <div className="leaderboard-phase">
-          <button
-            onClick={() => setPhase('landing')}
-            className="leaderboard-back-btn"
+
+        {phase === 'character' && (
+          <CharacterSelect key="character" onSelect={handleCharacterSelect} />
+        )}
+
+        {phase === 'leaderboard' && (
+          <motion.div 
+            key="leaderboard"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            className="leaderboard-phase"
           >
-            ← Back
-          </button>
-          <Leaderboard />
-        </div>
-      )}
+            <button
+              onClick={() => setPhase('landing')}
+              className="leaderboard-back-btn"
+            >
+              ← Back
+            </button>
+            <Leaderboard />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Leaderboard toggle */}
       {phase === 'landing' && (

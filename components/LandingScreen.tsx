@@ -9,8 +9,6 @@ interface Props {
 export function LandingScreen({ onStart }: Props) {
   return (
     <main className="landing-main">
-      <div className="landing-bg-layer" />
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
