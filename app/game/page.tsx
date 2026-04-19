@@ -1,14 +1,13 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { DecisionScreen } from '@/components/DecisionScreen'
+import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
+import { PlayerState, GeneratedDecision, CharacterType } from '@/types/game'
+import { narrateScene, stopNarration, playChoiceResult, playSfx, startBgMusic, toggleMute, isMuted } from '@/lib/audio'
+import { saveGame } from '@/lib/save-game'
 import { YearTransition } from '@/components/YearTransition'
 import { DecisionLoading } from '@/components/DecisionLoading'
-import { NetWorthBar } from '@/components/NetWorthBar'
-import { FactBox } from '@/components/FactBox'
-import { SaveButton } from '@/components/SaveButton'
-import { PlayerState, GeneratedDecision, CharacterType } from '@/types/game'
-import { narrateScene, stopNarration, playChoiceResult, playSfx, startBgMusic } from '@/lib/audio'
 
 type GamePhase = 'transition' | 'loading' | 'decision' | 'fact' | 'complete'
 
@@ -280,6 +279,31 @@ export default function GamePage() {
     }
   }, [playerState])
 
+  const [muted, setMuted] = useState(false)
+  const [badgeOpen, setBadgeOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  // Initialize mute state
+  useEffect(() => {
+    setMuted(isMuted())
+  }, [])
+
+  function handleMuteToggle() {
+    const nowMuted = toggleMute()
+    setMuted(nowMuted)
+  }
+
+  async function handleSave() {
+    if (!playerState || saving || saved) return
+    setSaving(true)
+    playSfx('click')
+    saveGame(playerState)
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2500)
+  }
+
   if (!playerState) {
     return (
       <div className="page-loading">
@@ -290,64 +314,226 @@ export default function GamePage() {
 
   return (
     <div className="page-wrapper relative">
-      {/* Back to home button */}
-      <button
-        onClick={handleGoHome}
-        style={{
-          position: 'fixed',
-          top: '3.5rem',
-          left: '1rem',
-          zIndex: 50,
-          background: 'transparent',
-          border: 'none',
-          color: '#4b5563',
-          fontSize: '0.75rem',
-          cursor: 'pointer',
-          padding: '0.25rem 0.5rem',
-          borderRadius: '0.375rem',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#9ca3af')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#4b5563')}
-      >
-        ← Home
-      </button>
+      <div className="game-page-wrapper">
+        <div className="game-frame-board">
+          <Image
+            src="/your_scence/Frame_board.svg"
+            alt=""
+            fill
+            className="game-frame-img"
+            priority
+          />
 
-      <NetWorthBar
-        netWorth={playerState.netWorth}
-        year={playerState.currentYear}
-        age={playerState.age}
-        delta={netWorthDelta}
-      />
+          <div className="game-content-overlay">
+            {/* ── 1ST MAIN DIV: Top Status Bar ────────────────── */}
+            <div className="game-top-bar">
+              <div className="game-top-item">
+                <div className="money-container">
+                  <Image
+                    src="/option_page/money_holder.svg"
+                    alt=""
+                    width={220}
+                    height={52}
+                    className="money-holder-img"
+                  />
+                  <div className="money-text">
+                    <span className="networth-amount">
+                      {playerState.netWorth.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumFractionDigits: 0,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="game-top-item">
+                <span className="year-age-label" style={{ marginRight: '1rem' }}>
+                  Year {playerState.currentYear} · Age {playerState.age}
+                </span>
+              </div>
+
+              <div className="game-top-item">
+                <button
+                  onClick={handleMuteToggle}
+                  className="mute-btn"
+                  title={muted ? 'Unmute' : 'Mute'}
+                >
+                  <Image
+                    src={muted ? "/option_page/volumn_mute_tab.svg" : "/option_page/volumn_unmute_tab.svg"}
+                    alt={muted ? "Muted" : "Unmuted"}
+                    width={45}
+                    height={45}
+                    className="mute-btn-img"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* ── 2ND MAIN DIV: Middle Content ────────────────── */}
+            <div className="game-middle-content">
+              {/* Left Half: Character Info */}
+              <div className="game-left-half">
+                <div className="character-story-title">Story: {playerState.name}</div>
+                <div className="character-image-placeholder">
+                  {/* Image placeholder */}
+                  needs image
+                </div>
+              </div>
+
+              {/* Right Half: Navigation, Progress, Decision */}
+              <div className="game-right-half">
+                <div className="right-half-nav">
+                  {/* Progress Indicator (Butterfly) */}
+                  <div className="butterfly-progress-container">
+                    <motion.div
+                      className="butterfly-sprite"
+                      initial={{ left: '0%' }}
+                      animate={{ left: `${(playerState.currentYear / 12) * 100}%` }}
+                      transition={{ duration: 1.5, ease: "easeInOut" }}
+                    >
+                      <Image
+                        src="/landing/butter fly.svg"
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="loading-butterfly-img"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Financial Badge / Term Pop-up */}
+                  <div className="financial-badge-container">
+                    <motion.div
+                      className="financial-badge-box"
+                      onClick={() => setBadgeOpen(!badgeOpen)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="financial-badge-text">
+                        {currentDecision?.financial_term || "Financial Wellness"}
+                      </div>
+                    </motion.div>
+                    <AnimatePresence>
+                      {badgeOpen && currentDecision && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="badge-popup"
+                        >
+                          <p style={{ fontWeight: 'bold', marginBottom: '4px' }}>{currentDecision.financial_term}</p>
+                          <p>{currentDecision.definition}</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Home Button */}
+                  <button onClick={handleGoHome} className="home-btn">
+                    <Image
+                      src="/option_page/home_tab.svg"
+                      alt="Home"
+                      width={42}
+                      height={42}
+                      className="home-btn-img"
+                    />
+                  </button>
+                </div>
+
+                {/* Decision Area */}
+                <div className="decision-area">
+                  <AnimatePresence mode="wait">
+                    {phase === 'decision' && currentDecision && (
+                      <motion.div
+                        key={currentDecision.scenario}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}
+                      >
+                        <p className="decision-scenario-large">{currentDecision.scenario}</p>
+                        <h2 className="decision-question-game">{currentDecision.question}</h2>
+
+                        <div className="options-list">
+                          {currentDecision.choices.map((choice, i) => (
+                            <button
+                              key={i}
+                              className="option-button"
+                              onClick={() => handleChoice(i)}
+                              disabled={chosenIndex !== null}
+                            >
+                              <Image
+                                src="/option_page/option_bar.svg"
+                                alt=""
+                                width={600}
+                                height={60}
+                                className="option-bar-img"
+                              />
+                              <div className="option-text-container">
+                                <div className="option-title">{choice.title}</div>
+                                <div className="option-impact">{choice.impact}</div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {phase === 'fact' && currentDecision && chosenIndex !== null && (
+                      <motion.div
+                        key="fact"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="fact-display"
+                        style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+                      >
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2E385F' }}>The Result</h3>
+                        <div style={{ background: 'rgba(46, 56, 95, 0.05)', padding: '1rem', borderRadius: '1rem' }}>
+                          <p style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '0.5rem', fontWeight: 600 }}>{currentDecision.choices[chosenIndex].lesson}</p>
+                          <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.4 }}>{currentDecision.fact_after}</p>
+                        </div>
+                        <button
+                          onClick={handleContinue}
+                          className="bg-[#2E385F] text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
+                          style={{ alignSelf: 'center', marginTop: '0.5rem' }}
+                        >
+                          Next Year →
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {phase === 'loading' && <DecisionLoading age={playerState.age} />}
+                </div>
+              </div>
+            </div>
+
+            {/* ── 3RD MAIN DIV: Bottom Action Bar ────────────────── */}
+            <div className="game-bottom-bar">
+              <button
+                onClick={handleSave}
+                className="save-game-btn"
+                disabled={saving || saved}
+                title={saved ? 'Game Saved' : saving ? 'Saving...' : 'Save Game'}
+                aria-label="Save Game"
+              >
+                <Image
+                  src="/option_page/save_state_bar.svg"
+                  alt=""
+                  width={280}
+                  height={55}
+                  className="save-bar-img"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {phase === 'transition' && (
         <YearTransition year={playerState.currentYear} age={playerState.age} />
-      )}
-
-      {phase === 'loading' && (
-        <DecisionLoading age={playerState.age} />
-      )}
-
-      {phase === 'decision' && currentDecision && (
-        <DecisionScreen
-          decision={currentDecision}
-          onChoice={handleChoice}
-          chosenIndex={chosenIndex}
-        />
-      )}
-
-      {phase === 'fact' && currentDecision && chosenIndex !== null && (
-        <FactBox
-          fact={currentDecision.fact_after}
-          choice={currentDecision.choices[chosenIndex]}
-          onContinue={handleContinue}
-          netWorthDelta={netWorthDelta}
-        />
-      )}
-
-      {/* Save game button — visible during decision and fact phases */}
-      {(phase === 'decision' || phase === 'fact') && (
-        <SaveButton playerState={playerState} />
       )}
     </div>
   )
