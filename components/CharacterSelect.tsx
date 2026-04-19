@@ -88,16 +88,16 @@ export function CharacterSelect({ onSelect }: Props) {
                 className="description-box-img"
               />
               <div className="description-text-overlay">
-                <p style={{ fontWeight: 700, marginBottom: '0.3rem', fontSize: '0.9rem' }}>
+                <p style={{ fontWeight: 700, marginBottom: '0.2rem', fontSize: '0.8rem', textAlign: 'center' }}>
                   {hoveredChar.name}
-                  <span style={{ fontWeight: 400, marginLeft: '0.4rem', fontSize: '0.75rem', opacity: 0.7 }}>
+                  <span style={{ fontWeight: 400, marginLeft: '0.3rem', fontSize: '0.68rem', opacity: 0.7 }}>
                     · {hoveredChar.title}
                   </span>
                 </p>
-                <p style={{ fontSize: '0.72rem', marginBottom: '0.4rem', opacity: 0.8 }}>
+                <p style={{ fontSize: '0.65rem', marginBottom: '0.35rem', opacity: 0.75, textAlign: 'center' }}>
                   {hoveredChar.salary} · {hoveredChar.netWorth} net worth
                 </p>
-                <p className="description-text">{hoveredChar.description}</p>
+                <p className="description-text" style={{ fontSize: '0.63rem' }}>{hoveredChar.description}</p>
               </div>
             </div>
           </div>

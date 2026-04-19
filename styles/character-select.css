@@ -14,9 +14,9 @@
 
 .character-frame-board {
   position: relative;
-  width: 70%;
-  max-width: 1200px;
-  height: 80vh;
+  width: 80%;
+  max-width: 1400px;
+  height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,20 +52,21 @@
 
 .character-description-container {
   position: absolute;
-  bottom: 80px;
-  left: 40px;
+  bottom: 10px;
+  left: -18px;
   width: 350px;
   height: 270px;
+  scale: 1.125;
 }
 
 .character-pick-title {
   position: absolute;
-  bottom: 300px;
-  left: 80px;
+  bottom: 345px;
+  left: 49px;
   font-family: 'HYWenHei', system-ui, sans-serif;
-  font-size: 2.3rem;
+  font-size: 1.3rem;
   font-weight: 900;
-  color: #fff;
+  color: #2E385F;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   z-index: 30;
@@ -80,15 +81,26 @@
 
 .description-text-overlay {
   position: absolute;
-  top: 40px;
-  left: 35px;
-  right: 35px;
-  bottom: 35px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
   color: #2E385F;
   font-family: 'HYWenHei', system-ui, sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   line-height: 1.5;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.description-text {
+  margin: 0;
+  text-align: center;
 }
 
 /* Right side: Plated Characters */
@@ -120,29 +132,29 @@
 }
 
 .plate-img {
-  width: 45%;
+  width: 40%;
   height: auto;
 }
 
 /* Stepped positions - re-calculated for 65% scale */
 .plate-3 {
-  bottom: 30px;
-  right: 0;
+  bottom: 55px;
+  right: -180px;
 }
 
 .plate-2 {
-  bottom: calc(30px + 68px);
-  right: -123px;
+  bottom: calc(30px + 85px);
+  right: -40px;
 }
 
 .plate-1 {
-  bottom: calc(30px + 76px);
-  right: 34px;
+  bottom: calc(30px + 115px);
+  right: 100px;
 }
 
 .plate-0 {
-  bottom: calc(30px + 104px);
-  right: 180px;
+  bottom: calc(30px + 165px);
+  right: 240px;
 }
 
 
