@@ -149,26 +149,25 @@
   display: block;
 }
 
-/* Stepped placement — left-based so plates start from the left edge of the
-   right section and cascade diagonally right+down, filling the visual gap */
+/* Stepped placement — wider gaps horizontally and vertically */
 .plate-0 {
-  bottom: 195px;
-  left: 5%;
+  bottom: 260px;
+  left: 3%;
 }
 
 .plate-1 {
-  bottom: 145px;
+  bottom: 175px;
   left: 20%;
 }
 
 .plate-2 {
-  bottom: 115px;
-  left: 35%;
+  bottom: 105px;
+  left: 37%;
 }
 
 .plate-3 {
-  bottom: 55px;
-  left: 50%;
+  bottom: 35px;
+  left: 54%;
 }
 
 /* Selection marker */
