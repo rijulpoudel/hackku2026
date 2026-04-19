@@ -73,10 +73,48 @@ const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
     isGradStudent: false,
     hasLLC: false,
   },
+  // Custom: placeholder — overridden in buildInitialState from sessionStorage
+  custom: {
+    salary: 45000,
+    netWorth: -28000,
+    savings: 2000,
+    loanBalance: 30000,
+    monthlyExpenses: 2400,
+    isFreelancing: false,
+    isPSLFEligible: false,
+    isPensionEnrolled: false,
+    isGradStudent: false,
+    hasLLC: false,
+  },
 }
 
 function buildInitialState(character: CharacterType, name: string): PlayerState {
-  const cfg = CHARACTER_CONFIG[character]
+  let cfg = CHARACTER_CONFIG[character]
+
+  // For custom characters, override config from the form data stored in sessionStorage
+  if (character === 'custom' && typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem('launch_custom_config')
+      if (raw) {
+        const custom = JSON.parse(raw)
+        const monthlyExpenses = Math.round(custom.salary / 12 * 0.55) || 1800
+        cfg = {
+          salary: custom.salary,
+          netWorth: custom.savings - custom.loanBalance,
+          savings: custom.savings,
+          loanBalance: custom.loanBalance,
+          monthlyExpenses,
+          isFreelancing: custom.isFreelancing ?? false,
+          isPSLFEligible: custom.isPSLFEligible ?? false,
+          isPensionEnrolled: false,
+          isGradStudent: false,
+          hasLLC: false,
+        }
+        name = custom.name || name
+      }
+    } catch { /* use placeholder defaults */ }
+  }
+
   return {
     userId: `guest_${Date.now()}`,
     name,
@@ -90,14 +128,18 @@ function buildInitialState(character: CharacterType, name: string): PlayerState 
     retirement401k: 0,
     creditCardDebt: 0,
     monthlyExpenses: cfg.monthlyExpenses,
-    ownsHome: false,
+    ownsHome: character === 'custom'
+      ? (() => { try { return JSON.parse(sessionStorage.getItem('launch_custom_config') || '{}').ownsHome ?? false } catch { return false } })()
+      : false,
     hasEmergencyFund: false,
     isFreelancing: cfg.isFreelancing,
     hasInvested: false,
     took401kMatch: false,
     filedTaxesCorrectly: false,
     hasNegotiatedSalary: false,
-    hasChildren: false,
+    hasChildren: character === 'custom'
+      ? (() => { try { return JSON.parse(sessionStorage.getItem('launch_custom_config') || '{}').hasChildren ?? false } catch { return false } })()
+      : false,
     hadJobLoss: false,
     isPSLFEligible: cfg.isPSLFEligible,
     isPensionEnrolled: cfg.isPensionEnrolled,
@@ -125,12 +167,18 @@ const getSceneImage = (char: CharacterType, year: number): string => {
     sam: {
       1: '1 6.svg', 2: '2 4.svg', 3: '3 4.svg', 4: '44 2.svg', 5: '5 4.svg', 6: '6 4.svg',
       7: '7 4.svg', 8: '8 4.svg', 9: '9 4.svg', 10: '10 3.svg', 11: '10 3.svg', 12: '10 3.svg',
-    }
+    },
+    // Custom uses Alex's scene images as a neutral fallback
+    custom: {
+      1: '1.svg', 2: '2.svg', 3: '3.svg', 4: '4.svg', 5: '4.svg', 6: '6 2.svg',
+      7: '7 2.svg', 8: '8 2.svg', 9: '9 2.svg', 10: '10 1.svg', 11: '10 1.svg', 12: '10 1.svg',
+    },
   }
 
-  const charName = char.charAt(0).toUpperCase() + char.slice(1)
-  const filename = Map[char]?.[year] || Map[char]?.[1] || '1.svg'
-  return `/scenes/${charName}/${filename}`
+  // Custom character reuses Alex's scene folder
+  const folderChar = char === 'custom' ? 'Alex' : char.charAt(0).toUpperCase() + char.slice(1)
+  const filename = Map[char]?.[year] || Map[char === 'custom' ? 'alex' : char]?.[1] || '1.svg'
+  return `/scenes/${folderChar}/${filename}`
 }
 
 export default function GamePage() {

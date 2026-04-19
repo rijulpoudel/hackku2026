@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { CharacterType } from '@/types/game'
 import { playSfx } from '@/lib/audio'
 import { VoiceRecorder } from '@/components/VoiceRecorder'
+import { CustomCharacterForm, CustomConfig } from '@/components/CustomCharacterForm'
 
 const CHARACTERS: Array<{
   type: CharacterType
@@ -61,6 +62,8 @@ export function CharacterSelect({ onSelect }: Props) {
   const [hoveredChar, setHoveredChar] = useState(CHARACTERS[0])
   // After picking a character, show the voice step before starting
   const [pendingChar, setPendingChar] = useState<typeof CHARACTERS[0] | null>(null)
+  // Custom character form
+  const [showCustomForm, setShowCustomForm] = useState(false)
 
   function handleCharClick(char: typeof CHARACTERS[0]) {
     playSfx('click')
@@ -71,6 +74,25 @@ export function CharacterSelect({ onSelect }: Props) {
     // Clear any stale voice ID from a previous session
     sessionStorage.removeItem('launch_custom_voice_id')
     onSelect(char.type, char.name)
+  }
+
+  function handleCustomComplete(config: CustomConfig) {
+    // Store config so game/page.tsx can build the initial state from it
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_custom_config', JSON.stringify(config))
+    }
+    // Treat as a "character" selection — voice step follows
+    const customChar = {
+      type: 'custom' as CharacterType,
+      name: config.name,
+      title: config.career,
+      plateImg: '',
+      salary: config.salary.toString(),
+      netWorth: (config.savings - config.loanBalance).toString(),
+      description: '',
+    }
+    setShowCustomForm(false)
+    setPendingChar(customChar)
   }
 
   return (
@@ -89,6 +111,38 @@ export function CharacterSelect({ onSelect }: Props) {
           className="frame-board-img"
           priority
         />
+
+        {/* Top Right Custom Action Button */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: '8%',
+            right: '5%',
+            zIndex: 40,
+            display: 'flex',
+          }}
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => { playSfx('click'); setShowCustomForm(true) }}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              display: 'flex',
+              filter: 'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.15))'
+            }}
+          >
+            <Image
+              src="/your_scence/custom.svg"
+              alt="Custom Action"
+              width={90}
+              height={42}
+            />
+          </motion.button>
+        </div>
 
         <div className="character-content-overlay">
           {/* Left: title + description box */}
@@ -254,6 +308,16 @@ export function CharacterSelect({ onSelect }: Props) {
               </button>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom character form — full-screen modal */}
+      <AnimatePresence>
+        {showCustomForm && (
+          <CustomCharacterForm
+            onComplete={handleCustomComplete}
+            onBack={() => setShowCustomForm(false)}
+          />
         )}
       </AnimatePresence>
     </motion.div>

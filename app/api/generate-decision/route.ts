@@ -7,12 +7,14 @@ import { PlayerState } from "@/types/game";
 export async function POST(req: NextRequest) {
   const playerState: PlayerState = await req.json();
 
-  // All 12 years: use character-specific hard-coded decisions
-  const characterDecision = getCharacterDecision(
-    playerState.character,
-    playerState.currentYear,
-  );
-  if (characterDecision) return NextResponse.json(characterDecision);
+  // Custom characters always use Gemini — their story is fully AI-generated
+  if (playerState.character !== 'custom') {
+    const characterDecision = getCharacterDecision(
+      playerState.character,
+      playerState.currentYear,
+    );
+    if (characterDecision) return NextResponse.json(characterDecision);
+  }
 
   // Fallback: try Gemini (if somehow we go beyond year 12)
   let attempts = 0;
