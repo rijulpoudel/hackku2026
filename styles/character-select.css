@@ -14,9 +14,9 @@
 
 .character-frame-board {
   position: relative;
-  width: 70%;
-  max-width: 1200px;
-  height: 80vh;
+  width: 80%;
+  max-width: 1400px;
+  height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,21 +52,22 @@
 
 .character-description-container {
   position: absolute;
-  bottom: -2px;
-  left: -39px;
+  bottom: 10px;
+  left: -18px;
   /* Shifted 80px left from 40px */
   width: 350px;
   height: 270px;
+  scale: 1.125;
 }
 
 .character-pick-title {
   position: absolute;
-  bottom: 307px;
+  bottom: 345px;
   /* 270 height + 80 bottom + 20 gap */
-  left: 43px;
+  left: 49px;
   /* -40 left + 50 right shift */
   font-family: 'HYWenHei', system-ui, sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   /* Scaled down 30% from 2.3rem */
   font-weight: 900;
   color: #2E385F;
@@ -134,29 +135,29 @@
 }
 
 .plate-img {
-  width: 30%;
+  width: 40%;
   height: auto;
 }
 
 /* Stepped positions - re-calculated for 65% scale */
 .plate-3 {
-  bottom: 30px;
-  right: 0;
+  bottom: 55px;
+  right: -180px;
 }
 
 .plate-2 {
-  bottom: calc(30px + 68px);
-  right: -123px;
+  bottom: calc(30px + 85px);
+  right: -40px;
 }
 
 .plate-1 {
-  bottom: calc(30px + 76px);
-  right: 34px;
+  bottom: calc(30px + 115px);
+  right: 100px;
 }
 
 .plate-0 {
-  bottom: calc(30px + 104px);
-  right: 180px;
+  bottom: calc(30px + 165px);
+  right: 240px;
 }
 
 
