@@ -2,57 +2,146 @@
    LandingScreen component styles
    ============================================ */
 
+@font-face {
+  font-family: 'HYWenHei';
+  src: url('/font/zh-cn.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .landing-main {
-  @apply relative min-h-screen w-full overflow-hidden bg-[#020023];
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #020023;
 }
 
 .landing-bg-layer {
-  @apply absolute inset-0 z-[1];
-}
-
-.landing-bg-img {
-  @apply object-cover;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  background-repeat: no-repeat;
+  object-fit: scale-down;
+  background-size: cover;
+  background-image: url('/landing/backg.svg');
 }
 
 .landing-content {
-  @apply relative z-20 mx-auto flex min-h-screen w-full max-w-[1300px] items-center justify-center px-4;
+  position: relative;
+  z-index: 20;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1300px;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .landing-book-wrapper {
-  @apply relative;
-  width: min(92vw, 860px);
+  position: relative;
+  width: 45vw;
 }
 
 .landing-responsive-img {
-  @apply h-auto w-full;
-}
-
-.landing-envelope {
-  @apply absolute left-[6%] bottom-[7%] z-30 w-[24%];
+  height: auto;
+  width: 100%;
 }
 
 .landing-buttons-group {
-  @apply absolute right-[6%] top-[28%] z-30 flex w-[34%] max-w-[230px] flex-col gap-2 sm:gap-3;
+  position: absolute;
+  right: 13%;
+  top: 29%;
+  z-index: 30;
+  display: flex;
+  width: 25%;
+  max-width: 230px;
+  flex-direction: column;
+  gap: 0.5rem;
+  transform: translate(-30px, -50px);
 }
 
 .landing-btn-disabled {
-  @apply cursor-default;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-btn-disabled:hover {
+  filter: brightness(1.1);
 }
 
 .landing-btn-play {
-  @apply outline-none;
+  outline: none;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.landing-star {
-  @apply pointer-events-none absolute z-30;
-}
-
-.landing-lantern-left {
-  @apply pointer-events-none absolute bottom-0 left-0 z-30;
-  width: clamp(130px, 14vw, 240px);
+.landing-btn-play:hover {
+  filter: brightness(1.1);
 }
 
 .landing-lantern-right {
-  @apply pointer-events-none absolute bottom-0 right-0 z-30;
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 30;
   width: clamp(130px, 14vw, 240px);
+}
+
+.landing-book-text-left {
+  position: absolute;
+  left: 10%;
+  top: 15%;
+  width: 38%;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+  font-family: 'HYWenHei', system-ui, -apple-system, sans-serif;
+  color: #47617D;
+}
+
+.landing-book-heading {
+  font-size: 1.5vw;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.landing-book-body {
+  font-size: 0.9vw;
+  line-height: 1.4;
+}
+
+.landing-book-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vw;
+  margin-top: 0.5vw;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5vw;
+}
+
+.stat-value {
+  font-weight: 800;
+  font-size: 1vw;
+  min-width: 4.5vw;
+  color: #47617D;
+}
+
+.stat-label {
+  font-size: 0.8vw;
+  opacity: 0.8;
 }
