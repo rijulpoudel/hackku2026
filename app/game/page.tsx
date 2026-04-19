@@ -272,7 +272,7 @@ export default function GamePage() {
           setPlayerState(savedState)
           setTimeout(() => fetchNextDecision(savedState), 1500)
           return
-        } catch {}
+        } catch { }
       }
 
       const storedChar = sessionStorage.getItem('launch_character') as CharacterType
@@ -338,34 +338,16 @@ export default function GamePage() {
             <div
               style={{
                 position: 'relative',
-                width: '80vw',
-                maxWidth: '1200px',
-                marginTop: '100px',
+                width: '90vw',
+                maxWidth: '1300px',
+                maxHeight: '90vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '20px',
               }}
             >
               {/* Animated elements from landing screen context */}
-              <motion.div
-                className="landing-butterfly"
-                animate={{
-                  rotate: [0, -3, 0, 3, 0],
-                  scaleY: [1, 1.05, 1, 0.95, 1],
-                  filter: [
-                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
-                    'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))',
-                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
-                  ],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ bottom: '90%', left: '-5%', width: '10%' }}
-              >
-                <Image
-                  src="/landing/butter fly.svg"
-                  alt="Butterfly"
-                  width={100}
-                  height={100}
-                  className="landing-responsive-img"
-                />
-              </motion.div>
 
               <motion.div
                 className="landing-constellation"
@@ -389,101 +371,14 @@ export default function GamePage() {
                 />
               </motion.div>
 
-              {/* Top Controls Area - Anchored above the board */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '-3%',
-                  right: '5%',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                  zIndex: 20,
-                  gap: '1vw',
-                  width: '100%',
-                }}
-              >
-                {/* Net Worth Display */}
-                <div style={{ position: 'relative', width: 'clamp(180px, 15vw, 220px)', aspectRatio: '220/52' }}>
-                  <Image src="/option_page/money_holder.svg" alt="Money" fill style={{ objectFit: 'contain' }} />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: `'HYWenHei', system-ui, sans-serif`,
-                      color: 'white',
-                      fontSize: 'clamp(1rem, 1.2vw, 1.3rem)',
-                      fontWeight: 'bold',
-                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    {playerState.netWorth.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      maximumFractionDigits: 0,
-                    })}
-                  </div>
-                </div>
-
-                {/* Year and Age Badge */}
-                <div
-                  style={{
-                    position: 'relative',
-                    background: '#f4ede1',
-                    border: '1px solid #d3c4a9',
-                    borderRadius: '20px',
-                    padding: '0.5rem 1.5rem',
-                    color: '#344966',
-                    fontFamily: `'HYWenHei', system-ui, sans-serif`,
-                    fontWeight: 'bold',
-                    fontSize: 'clamp(0.9rem, 1vw, 1.1rem)',
-                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05), 0 2px 5px rgba(0,0,0,0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                  }}
-                >
-                  Year {playerState.currentYear} · Age {playerState.age}
-                  <span style={{ fontSize: '0.8em' }}>▼</span>
-                </div>
-
-                {/* Mute Button */}
-                <button
-                  onClick={handleMuteToggle}
-                  style={{
-                    position: 'relative',
-                    width: 'clamp(80px, 7vw, 110px)',
-                    aspectRatio: '100/45',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                    transition: 'transform 0.1s',
-                  }}
-                  onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                  onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                  title={muted ? 'Unmute' : 'Mute'}
-                >
-                  <Image
-                    src={muted ? "/option_page/volumn_mute_tab.svg" : "/option_page/volumn_unmute_tab.svg"}
-                    alt="Volume"
-                    fill
-                    style={{ objectFit: 'contain' }}
-                  />
-                </button>
-              </div>
-
-
-              {/* Notebook container */}
+              {/* Notebook container - Augmented with 50px top padding as requested */}
               <div
                 style={{
                   position: 'relative',
                   width: '100%',
+                  maxWidth: '136vh',
                   aspectRatio: '1.6',
+                  paddingTop: '50px',
                 }}
               >
                 <Image
@@ -493,6 +388,115 @@ export default function GamePage() {
                   style={{ objectFit: 'contain' }}
                   priority
                 />
+
+                {/* Top Controls Area - Anchored above the board, now shifted down 50px */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(-3% + 50px)',
+                    right: '0.7%',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    zIndex: 20,
+                    gap: '1vw',
+                    width: '100%',
+                  }}
+                >
+                  {/* Butterfly moved to top left of the status bar */}
+                  <motion.div
+                    animate={{
+                      rotate: [0, -3, 0, 3, 0],
+                      scaleY: [1, 1.05, 1, 0.95, 1],
+                      filter: [
+                        'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                        'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))',
+                        'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                      ],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ position: 'absolute', top: '-100%', left: '0', width: '8%', pointerEvents: 'none' }}
+                  >
+                    <Image
+                      src="/landing/butter fly.svg"
+                      alt="Butterfly"
+                      width={60}
+                      height={60}
+                      className="landing-responsive-img"
+                    />
+                  </motion.div>
+
+                  {/* Net Worth Display */}
+                  <div style={{ position: 'relative', width: 'clamp(180px, 15vw, 220px)', aspectRatio: '220/52' }}>
+                    <Image src="/option_page/money_holder.svg" alt="Money" fill style={{ objectFit: 'contain' }} />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                        color: 'white',
+                        fontSize: 'clamp(1rem, 1.2vw, 1.3rem)',
+                        fontWeight: 'bold',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                      }}
+                    >
+                      {playerState.netWorth < 0 ? '-' : ''}${Math.abs(playerState.netWorth).toLocaleString()}
+                    </div>
+                  </div>
+
+                  {/* Year and Age Badge */}
+                  <div
+                    style={{
+                      position: 'relative',
+                      top: '2.8px',
+                      left: '9.4px',
+                      background: '#f4ede1',
+                      border: '1px solid #d3c4a9',
+                      borderRadius: '20px',
+                      padding: '0.27rem 2.8rem',
+                      color: '#344966',
+                      fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                      fontWeight: 'bold',
+                      fontSize: 'clamp(0.9rem, 1vw, 1.1rem)',
+                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05), 0 2px 5px rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                    }}
+                  >
+                    Year {playerState.currentYear} · Age {playerState.age}
+                    <span style={{ fontSize: '0.8em' }}>▼</span>
+                  </div>
+
+                  {/* Mute Button */}
+                  <button
+                    onClick={handleMuteToggle}
+                    style={{
+                      position: 'relative',
+                      width: 'clamp(80px, 7vw, 110px)',
+                      aspectRatio: '100/45',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      transition: 'transform 0.1s',
+                    }}
+                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                    onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title={muted ? 'Unmute' : 'Mute'}
+                  >
+                    <Image
+                      src={muted ? "/option_page/volumn_mute_tab.svg" : "/option_page/volumn_unmute_tab.svg"}
+                      alt="Volume"
+                      fill
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </button>
+                </div>
 
                 {/* Notebook Content Layout */}
                 <div
@@ -512,7 +516,7 @@ export default function GamePage() {
                       justifyContent: 'center',
                       alignItems: 'center',
                       textAlign: 'center',
-                      padding: '2% 2% 0 2%',
+                      padding: '2% 2% 0 0%',
                     }}
                   >
                     <h2
@@ -522,16 +526,18 @@ export default function GamePage() {
                         fontSize: 'clamp(1.5rem, 2vw, 2.2rem)',
                         fontWeight: 'bold',
                         marginBottom: '2%',
+                        width: '100%',
+                        textAlign: 'center',
                       }}
                     >
                       Story: {playerState.name.split(' ')[0]}
                     </h2>
-                    
+
                     {/* Stars decoration */}
                     <div style={{ color: '#d3c4a9', fontSize: '1.2rem', marginBottom: '8%', letterSpacing: '4px' }}>
                       <span style={{ fontSize: '0.8em' }}>✦</span> <span>✦</span> <span style={{ fontSize: '1.3em' }}>✦</span> <span>✦</span> <span style={{ fontSize: '0.8em' }}>✦</span>
                     </div>
-                    
+
                     <div
                       style={{
                         position: 'relative',
@@ -563,13 +569,13 @@ export default function GamePage() {
                       flexDirection: 'column',
                     }}
                   >
-                    {/* Home Button top right */}
+                    {/* Home Button top right - Shifted down 20px and right 38px */}
                     <button
                       onClick={handleGoHome}
                       style={{
                         position: 'absolute',
-                        top: 0,
-                        right: 0,
+                        top: '20px',
+                        right: '-38px',
                         width: 'clamp(80px, 7vw, 110px)',
                         aspectRatio: '100/45',
                         background: 'transparent',
@@ -624,7 +630,7 @@ export default function GamePage() {
                               {currentDecision.scenario} {currentDecision.question}
                             </p>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1vw', marginTop: 'auto', marginBottom: '2vw' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8vw', marginTop: 'auto', marginBottom: '2vw' }}>
                               {currentDecision.choices.map((choice, i) => (
                                 <button
                                   key={i}
@@ -632,8 +638,9 @@ export default function GamePage() {
                                   disabled={chosenIndex !== null}
                                   style={{
                                     position: 'relative',
-                                    width: '100%',
-                                    aspectRatio: '600/60',
+                                    width: '102.5%',
+                                    left: '-1.25%',
+                                    aspectRatio: '615/54.7',
                                     background: 'none',
                                     border: 'none',
                                     padding: 0,
@@ -667,11 +674,12 @@ export default function GamePage() {
                                       alignItems: 'center',
                                       color: 'white',
                                       fontFamily: `'HYWenHei', system-ui, sans-serif`,
-                                      padding: '0 10%',
-                                      paddingLeft: '15%',
+                                      padding: '0 5%',
+                                      paddingLeft: '8%',
+                                      textAlign: 'center',
                                     }}
                                   >
-                                    <div style={{ fontSize: 'clamp(0.75rem, 0.9vw, 1rem)', fontWeight: 'bold' }}>
+                                    <div style={{ fontSize: 'clamp(0.57rem, 0.7vw, 0.83rem)', fontWeight: 'bold' }}>
                                       {choice.title}
                                     </div>
                                   </div>
