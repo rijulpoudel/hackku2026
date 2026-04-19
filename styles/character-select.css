@@ -68,8 +68,8 @@
 
 .character-title-container {
   position: absolute;
-  bottom: 370px;
-  left: 20px;
+  bottom: 350px;
+  left: 13px;
   z-index: 30;
 }
 
@@ -94,13 +94,16 @@
 .description-box-img {
   width: 100%;
   height: 100%;
+  position: absolute;
   object-fit: contain;
+  left: -18px;
+  bottom: -24px;
 }
 
 .description-text-overlay {
   position: absolute;
   inset: 0;
-  padding: 30px 45px;
+  padding: 30px 90px;
   color: var(--color-navy);
   font-family: 'HYWenHei', system-ui, sans-serif;
   font-size: 0.85rem;
@@ -143,29 +146,29 @@
 }
 
 .plate-img {
-  width: 40%;
+  width: 29%;
   height: auto;
 }
 
 /* Stepped placement - clean alignment to the right edge */
 .plate-3 {
-  bottom: 12%;
-  right: -5%;
+  bottom: 3%;
+  right: -55.5%;
 }
 
 .plate-2 {
-  bottom: 28%;
-  right: 5%;
+  bottom: 23.5%;
+  right: -31%;
 }
 
 .plate-1 {
-  bottom: 44%;
-  right: 15%;
+  bottom: 34.5%;
+  right: -6.5%;
 }
 
 .plate-0 {
-  bottom: 60%;
-  right: 25%;
+  bottom: 43.5%;
+  right: 17.5%;
 }
 
 /* Selection marker */
