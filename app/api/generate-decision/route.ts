@@ -28,9 +28,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Last resort fallback
+  // Last resort fallback — year-specific first, then any alex/sam decision for this year
   const fallback = FALLBACK_DECISIONS[playerState.currentYear];
   if (fallback) return NextResponse.json(fallback);
+
+  // Ultimate fallback: use Alex's hard-coded decision for this year (covers years 1-12)
+  const ultimateFallback = getCharacterDecision('alex', playerState.currentYear);
+  if (ultimateFallback) return NextResponse.json(ultimateFallback);
 
   return NextResponse.json(
     { error: "Failed to generate decision" },

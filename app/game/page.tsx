@@ -165,7 +165,30 @@ export default function GamePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state),
       })
-      const decision: GeneratedDecision = await res.json()
+      const data = await res.json()
+
+      // Guard: API returned an error object or a decision missing choices
+      if (!res.ok || !data.choices || !Array.isArray(data.choices)) {
+        console.error('generate-decision returned invalid response:', data)
+        // Retry once automatically before giving up
+        const retry = await fetch('/api/generate-decision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state),
+        })
+        const retryData = await retry.json()
+        if (!retryData.choices || !Array.isArray(retryData.choices)) {
+          console.error('Retry also failed:', retryData)
+          setPhase('loading') // stay on loading — avoid blank crash
+          return
+        }
+        setCurrentDecision(retryData as GeneratedDecision)
+        setPhase('decision')
+        setTimeout(() => narrateScene(retryData.scenario), 400)
+        return
+      }
+
+      const decision = data as GeneratedDecision
       setCurrentDecision(decision)
       setPhase('decision')
 
@@ -173,7 +196,7 @@ export default function GamePage() {
       setTimeout(() => narrateScene(decision.scenario), 400)
     } catch (err) {
       console.error('Failed to fetch decision:', err)
-      setPhase('decision')
+      setPhase('loading') // stay on loading rather than crashing
     }
   }
 
