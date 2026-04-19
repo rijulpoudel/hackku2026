@@ -48,7 +48,7 @@
 
 .landing-book-wrapper {
   position: relative;
-  width: 45vw;
+  width: 40vw;
   margin-top: 200px;
 }
 
@@ -141,10 +141,29 @@
 
 .landing-funtext {
   position: absolute;
-  bottom: calc(70% - 10px);
+  bottom: calc(100% - 25px);
   left: 50%;
   transform: translateX(-50%);
   z-index: -1;
   width: 70%;
+  pointer-events: none;
+  scale: 1;
+}
+
+.landing-butterfly {
+  position: absolute;
+  bottom: calc(100% + 20px);
+  left: -5%;
+  z-index: -2;
+  width: 20%;
+  pointer-events: none;
+}
+
+.landing-constellation {
+  position: absolute;
+  bottom: calc(100% - 25px);
+  right: -10%;
+  z-index: -2;
+  width: 30%;
   pointer-events: none;
 }

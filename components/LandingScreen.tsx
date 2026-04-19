@@ -22,9 +22,33 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, h
         className="landing-content"
       >
         <div className="landing-book-wrapper">
+          <motion.div 
+            className="landing-butterfly"
+            animate={{ 
+              rotate: [0, -3, 0, 3, 0], 
+              scaleY: [1, 1.05, 1, 0.95, 1],
+              filter: ['brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))', 'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))', 'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))']
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Image src="/landing/butter fly.svg" alt="Butterfly" width={150} height={150} className="landing-responsive-img" />
+          </motion.div>
+
           <div className="landing-funtext">
             <Image src="/landing/funtextbg.svg" alt="Fun Text" width={600} height={120} className="landing-responsive-img" />
           </div>
+
+          <motion.div 
+            className="landing-constellation"
+            animate={{ 
+              opacity: [0.3, 1, 0.3], 
+              filter: ['brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))', 'brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.9))', 'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))']
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Image src="/landing/CONSETELATION.svg" alt="Constellation" width={250} height={250} className="landing-responsive-img" />
+          </motion.div>
+
           <Image
             src="/landing/book.svg"
             alt="LAUNCH main menu book"
