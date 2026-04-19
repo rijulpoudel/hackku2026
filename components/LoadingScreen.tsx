@@ -46,6 +46,7 @@ export function LoadingScreen() {
               width={70}
               height={70}
               className="loading-butterfly-img"
+              style={{ height: 'auto' }}
             />
           </motion.div>
         </div>

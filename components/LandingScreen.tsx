@@ -37,11 +37,11 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
             }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Image src="/landing/butter fly.svg" alt="Butterfly" width={150} height={150} className="landing-responsive-img" />
+            <Image src="/landing/butter fly.svg" alt="Butterfly" width={150} height={150} className="landing-responsive-img" style={{ height: 'auto' }} />
           </motion.div>
 
           <div className="landing-funtext">
-            <Image src="/landing/funtextbg.svg" alt="Fun Text" width={600} height={120} className="landing-responsive-img" />
+            <Image src="/landing/funtextbg.svg" alt="Fun Text" width={600} height={120} className="landing-responsive-img" style={{ height: 'auto' }} />
           </div>
 
           <motion.div
@@ -56,7 +56,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
             }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Image src="/landing/CONSETELATION.svg" alt="Constellation" width={250} height={250} className="landing-responsive-img" />
+            <Image src="/landing/CONSETELATION.svg" alt="Constellation" width={250} height={250} className="landing-responsive-img" style={{ height: 'auto' }} />
           </motion.div>
 
           <Image
@@ -66,6 +66,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
             height={157}
             priority
             className="landing-responsive-img"
+            style={{ height: 'auto' }}
           />
 
           <div className="landing-book-text-left">
@@ -100,7 +101,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               whileTap={{ scale: 0.98 }}
               className="landing-btn-play"
             >
-              <Image src="/landing/play.svg" alt="Play" width={230} height={72} className="landing-responsive-img" />
+              <Image src="/landing/play.svg" alt="Play" width={230} height={72} className="landing-responsive-img" style={{ height: 'auto' }} />
             </motion.button>
 
             {/* Continue — resume in-progress session */}
@@ -114,7 +115,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               className="landing-btn-disabled"
               style={{ opacity: hasSavedGame ? 1 : 0.5 }}
             >
-              <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" />
+              <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" style={{ height: 'auto' }} />
             </motion.button>
 
             {/* Scene — scenes journal */}
@@ -127,7 +128,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
             >
-              <Image src="/landing/scene.svg" alt="Scene" width={230} height={72} className="landing-responsive-img" />
+              <Image src="/landing/scene.svg" alt="Scene" width={230} height={72} className="landing-responsive-img" style={{ height: 'auto' }} />
             </motion.button>
 
             {/* Load Scenes — saved games modal */}
@@ -141,7 +142,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               className="landing-btn-disabled"
               style={{ opacity: hasSaveSlots ? 1 : 0.5 }}
             >
-              <Image src="/landing/loadscenes.svg" alt="Load Scenes" width={230} height={72} className="landing-responsive-img" />
+              <Image src="/landing/loadscenes.svg" alt="Load Scenes" width={230} height={72} className="landing-responsive-img" style={{ height: 'auto' }} />
             </motion.button>
 
             {/* Credits */}
@@ -154,7 +155,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
             >
-              <Image src="/landing/credits.svg" alt="Credits" width={230} height={72} className="landing-responsive-img" />
+              <Image src="/landing/credits.svg" alt="Credits" width={230} height={72} className="landing-responsive-img" style={{ height: 'auto' }} />
             </motion.button>
           </div>
         </div>

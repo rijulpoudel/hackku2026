@@ -158,6 +158,7 @@ export function CharacterSelect({ onSelect, onCustom }: Props) {
                   width={150}
                   height={48}
                   className="plate-img"
+                  style={{ height: 'auto' }}
                 />
               </motion.button>
             ))}

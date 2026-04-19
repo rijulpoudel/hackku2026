@@ -27,6 +27,7 @@ export function GlobalBanner() {
           width={240}
           height={500}
           className="global-responsive-img"
+          style={{ height: 'auto' }}
         />
       </motion.div>
 
@@ -35,21 +36,21 @@ export function GlobalBanner() {
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         className="global-bush"
       >
-        <Image src="/landing/bush.svg" alt="" width={500} height={400} className="global-responsive-img" />
+        <Image src="/landing/bush.svg" alt="" width={500} height={400} className="global-responsive-img" style={{ height: 'auto' }} loading="eager" priority />
       </motion.div>
       <motion.div
         animate={{ rotate: [0, 2, 0, -2, 0], scaleY: [1, 1.03, 1, 0.97, 1] }}
         transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         className="global-flowero"
       >
-        <Image src="/landing/flowero.svg" alt="" width={300} height={350} className="global-responsive-img" />
+        <Image src="/landing/flowero.svg" alt="" width={300} height={350} className="global-responsive-img" style={{ height: 'auto' }} />
       </motion.div>
       <motion.div
         animate={{ rotate: [0, -3, 0, 3, 0], scaleY: [1, 1.04, 1, 0.98, 1] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
         className="global-flowert"
       >
-        <Image src="/landing/flowert.svg" alt="" width={300} height={350} className="global-responsive-img" />
+        <Image src="/landing/flowert.svg" alt="" width={300} height={350} className="global-responsive-img" style={{ height: 'auto' }} />
       </motion.div>
     </>
   )
