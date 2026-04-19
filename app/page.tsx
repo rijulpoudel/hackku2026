@@ -98,7 +98,7 @@ export default function Home() {
 
         {/* ── Character select ──────────────────────────── */}
         {phase === 'character' && (
-          <CharacterSelect key="character" onSelect={handleCharacterSelect} />
+          <CharacterSelect key="character" onSelect={handleCharacterSelect} onBack={() => setPhase('landing')} />
         )}
 
         {/* ── Leaderboard ───────────────────────────────── */}
@@ -118,12 +118,17 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Credits modal — overlays landing ────────────── */}
+      {/* ── Credits page — standalone ────────────── */}
       {phase === 'credits' && (
-        <>
-          <LandingScreen {...landingProps} />
+        <motion.div
+          key="credits"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+        >
           <CreditsModal onClose={() => setPhase('landing')} />
-        </>
+        </motion.div>
       )}
 
       {/* ── Load game page — standalone ──────────── */}
