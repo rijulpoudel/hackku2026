@@ -74,7 +74,36 @@ export function CharacterSelect({ onSelect }: Props) {
         <div className="character-content-overlay">
           {/* Left Side: Portfolio / Story Details */}
           <div className="character-left-section">
-            <h2 className="character-pick-title">Pick your story</h2>
+            <div className="character-title-container">
+              <motion.div 
+                className="title-butterfly"
+                animate={{ 
+                  x: [0, 15, 0, -15, 0],
+                  y: [0, -15, -30, -15, 0],
+                  rotate: [0, 10, 0, -10, 0],
+                  scaleY: [1, 0.7, 1, 0.7, 1],
+                  filter: [
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                    'brightness(1.4) drop-shadow(0 0 15px rgba(255,255,255,0.7))',
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))'
+                  ]
+                }}
+                transition={{ 
+                  duration: 6, 
+                  repeat: Infinity, 
+                  ease: "linear" 
+                }}
+              >
+                <Image 
+                  src="/landing/butter fly.svg" 
+                  alt="" 
+                  width={40} 
+                  height={40} 
+                  className="butterfly-mini"
+                />
+              </motion.div>
+              <h2 className="character-pick-title">Pick your story</h2>
+            </div>
             
             <div className="character-description-container">
               <Image 
