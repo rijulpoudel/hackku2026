@@ -107,6 +107,32 @@ function buildInitialState(character: CharacterType, name: string): PlayerState 
   }
 }
 
+// Scene image mapping fallback logic
+const getSceneImage = (char: CharacterType, year: number): string => {
+  const Map: Record<CharacterType, Record<number, string>> = {
+    maya: {
+      1: '1 3.svg', 2: '2 1.svg', 3: '3 1.svg', 4: '4 1.svg', 5: '5 1.svg', 6: '6 1.svg',
+      7: '7 1.svg', 8: '8 1.svg', 9: '9 1.svg', 10: '12 1.svg', 11: '12 1.svg', 12: '12 1.svg',
+    },
+    alex: {
+      1: '1.svg', 2: '2.svg', 3: '3.svg', 4: '4.svg', 5: '4.svg', 6: '6 2.svg',
+      7: '7 2.svg', 8: '8 2.svg', 9: '9 2.svg', 10: '10 1.svg', 11: '10 1.svg', 12: '10 1.svg',
+    },
+    jordan: {
+      1: '1 5.svg', 2: '2 3.svg', 3: '3 3.svg', 4: '44 1.svg', 5: '5 3.svg', 6: '6 3.svg',
+      7: '7 3.svg', 8: '8 3.svg', 9: '9 3.svg', 10: '10 2.svg', 11: '11 1.svg', 12: '12 2.svg',
+    },
+    sam: {
+      1: '1 6.svg', 2: '2 4.svg', 3: '3 4.svg', 4: '44 2.svg', 5: '5 4.svg', 6: '6 4.svg',
+      7: '7 4.svg', 8: '8 4.svg', 9: '9 4.svg', 10: '10 3.svg', 11: '10 3.svg', 12: '10 3.svg',
+    }
+  }
+
+  const charName = char.charAt(0).toUpperCase() + char.slice(1)
+  const filename = Map[char]?.[year] || Map[char]?.[1] || '1.svg'
+  return `/scenes/${charName}/${filename}`
+}
+
 export default function GamePage() {
   const router = useRouter()
   const [phase, setPhase] = useState<GamePhase>('transition')
@@ -117,7 +143,6 @@ export default function GamePage() {
   const initialized = useRef(false)
 
   async function fetchNextDecision(state: PlayerState) {
-    // Stop any previous narration before loading the next scene
     stopNarration()
     setPhase('loading')
     try {
@@ -130,7 +155,6 @@ export default function GamePage() {
       setCurrentDecision(decision)
       setPhase('decision')
 
-      // Narrate the scene scenario via ElevenLabs (after a short delay so screen renders first)
       setTimeout(() => narrateScene(decision.scenario), 400)
     } catch (err) {
       console.error('Failed to fetch decision:', err)
@@ -141,9 +165,7 @@ export default function GamePage() {
   async function handleChoice(choiceIndex: number) {
     if (!currentDecision || !playerState) return
 
-    // Stop narration when player makes a choice
     stopNarration()
-
     setChosenIndex(choiceIndex)
 
     const choice = currentDecision.choices[choiceIndex]
@@ -214,7 +236,6 @@ export default function GamePage() {
     setNetWorthDelta(0)
     setPhase('transition')
 
-    // Narrate transition text for years 2+
     if (nextYear > 1) {
       setTimeout(() => narrateScene('Time passes. The choices you made are already compounding.'), 300)
     }
@@ -227,14 +248,12 @@ export default function GamePage() {
     router.push('/')
   }
 
-  // Stop narration when the game page unmounts (back button, verdict, etc.)
   useEffect(() => {
     return () => {
       stopNarration()
     }
   }, [])
 
-  // Initialize on mount
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
@@ -245,7 +264,6 @@ export default function GamePage() {
     let name = 'Graduate'
 
     if (typeof window !== 'undefined') {
-      // Check if loading a saved game
       const savedStateRaw = sessionStorage.getItem('launch_load_save')
       if (savedStateRaw) {
         try {
@@ -254,12 +272,9 @@ export default function GamePage() {
           setPlayerState(savedState)
           setTimeout(() => fetchNextDecision(savedState), 1500)
           return
-        } catch {
-          // Corrupt save — fall through to fresh start
-        }
+        } catch {}
       }
 
-      // Fresh start
       const storedChar = sessionStorage.getItem('launch_character') as CharacterType
       const storedName = sessionStorage.getItem('launch_name')
       if (storedChar) character = storedChar
@@ -271,7 +286,6 @@ export default function GamePage() {
     setTimeout(() => fetchNextDecision(initialState), 2000)
   }, [])
 
-  // Also save to sessionStorage on every state change so "Continue" always works
   useEffect(() => {
     if (!playerState) return
     if (typeof window !== 'undefined') {
@@ -280,11 +294,9 @@ export default function GamePage() {
   }, [playerState])
 
   const [muted, setMuted] = useState(false)
-  const [badgeOpen, setBadgeOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  // Initialize mute state
   useEffect(() => {
     setMuted(isMuted())
   }, [])
@@ -314,223 +326,456 @@ export default function GamePage() {
 
   return (
     <div className="page-wrapper relative">
-      <div className="game-page-wrapper">
-        <div className="game-frame-board">
-          <Image
-            src="/your_scence/Frame_board.svg"
-            alt=""
-            fill
-            className="game-frame-img"
-            priority
-          />
+      <main className="landing-main" style={{ zIndex: 10 }}>
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="landing-content"
+            style={{ flexDirection: 'column' }}
+          >
+            <div
+              style={{
+                position: 'relative',
+                width: '80vw',
+                maxWidth: '1200px',
+                marginTop: '100px',
+              }}
+            >
+              {/* Animated elements from landing screen context */}
+              <motion.div
+                className="landing-butterfly"
+                animate={{
+                  rotate: [0, -3, 0, 3, 0],
+                  scaleY: [1, 1.05, 1, 0.95, 1],
+                  filter: [
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                    'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))',
+                    'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                  ],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ bottom: '90%', left: '-5%', width: '10%' }}
+              >
+                <Image
+                  src="/landing/butter fly.svg"
+                  alt="Butterfly"
+                  width={100}
+                  height={100}
+                  className="landing-responsive-img"
+                />
+              </motion.div>
 
-          <div className="game-content-overlay">
-            {/* ── 1ST MAIN DIV: Top Status Bar ────────────────── */}
-            <div className="game-top-bar">
-              <div className="game-top-item">
-                <div className="money-container">
-                  <Image
-                    src="/option_page/money_holder.svg"
-                    alt=""
-                    width={220}
-                    height={52}
-                    className="money-holder-img"
-                  />
-                  <div className="money-text">
-                    <span className="networth-amount">
-                      {playerState.netWorth.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        maximumFractionDigits: 0,
-                      })}
-                    </span>
+              <motion.div
+                className="landing-constellation"
+                animate={{
+                  opacity: [0.3, 1, 0.3],
+                  filter: [
+                    'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                    'brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.9))',
+                    'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ bottom: '85%', right: '-8%', width: '18%' }}
+              >
+                <Image
+                  src="/landing/CONSETELATION.svg"
+                  alt="Constellation"
+                  width={200}
+                  height={200}
+                  className="landing-responsive-img"
+                />
+              </motion.div>
+
+              {/* Top Controls Area - Anchored above the board */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-3%',
+                  right: '5%',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  zIndex: 20,
+                  gap: '1vw',
+                  width: '100%',
+                }}
+              >
+                {/* Net Worth Display */}
+                <div style={{ position: 'relative', width: 'clamp(180px, 15vw, 220px)', aspectRatio: '220/52' }}>
+                  <Image src="/option_page/money_holder.svg" alt="Money" fill style={{ objectFit: 'contain' }} />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                      color: 'white',
+                      fontSize: 'clamp(1rem, 1.2vw, 1.3rem)',
+                      fontWeight: 'bold',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {playerState.netWorth.toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                      maximumFractionDigits: 0,
+                    })}
                   </div>
                 </div>
-              </div>
 
-              <div className="game-top-item">
-                <span className="year-age-label" style={{ marginRight: '1rem' }}>
+                {/* Year and Age Badge */}
+                <div
+                  style={{
+                    position: 'relative',
+                    background: '#f4ede1',
+                    border: '1px solid #d3c4a9',
+                    borderRadius: '20px',
+                    padding: '0.5rem 1.5rem',
+                    color: '#344966',
+                    fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                    fontWeight: 'bold',
+                    fontSize: 'clamp(0.9rem, 1vw, 1.1rem)',
+                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05), 0 2px 5px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                  }}
+                >
                   Year {playerState.currentYear} · Age {playerState.age}
-                </span>
-              </div>
+                  <span style={{ fontSize: '0.8em' }}>▼</span>
+                </div>
 
-              <div className="game-top-item">
+                {/* Mute Button */}
                 <button
                   onClick={handleMuteToggle}
-                  className="mute-btn"
+                  style={{
+                    position: 'relative',
+                    width: 'clamp(80px, 7vw, 110px)',
+                    aspectRatio: '100/45',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    transition: 'transform 0.1s',
+                  }}
+                  onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                  onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   title={muted ? 'Unmute' : 'Mute'}
                 >
                   <Image
                     src={muted ? "/option_page/volumn_mute_tab.svg" : "/option_page/volumn_unmute_tab.svg"}
-                    alt={muted ? "Muted" : "Unmuted"}
-                    width={45}
-                    height={45}
-                    className="mute-btn-img"
+                    alt="Volume"
+                    fill
+                    style={{ objectFit: 'contain' }}
                   />
                 </button>
               </div>
-            </div>
 
-            {/* ── 2ND MAIN DIV: Middle Content ────────────────── */}
-            <div className="game-middle-content">
-              {/* Left Half: Character Info */}
-              <div className="game-left-half">
-                <div className="character-story-title">Story: {playerState.name}</div>
-                <div className="character-image-placeholder">
-                  {/* Image placeholder */}
-                  needs image
-                </div>
-              </div>
 
-              {/* Right Half: Navigation, Progress, Decision */}
-              <div className="game-right-half">
-                <div className="right-half-nav">
-                  {/* Progress Indicator (Butterfly) */}
-                  <div className="butterfly-progress-container">
-                    <motion.div
-                      className="butterfly-sprite"
-                      initial={{ left: '0%' }}
-                      animate={{ left: `${(playerState.currentYear / 12) * 100}%` }}
-                      transition={{ duration: 1.5, ease: "easeInOut" }}
-                    >
-                      <Image
-                        src="/landing/butter fly.svg"
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="loading-butterfly-img"
-                      />
-                    </motion.div>
-                  </div>
-
-                  {/* Financial Badge / Term Pop-up */}
-                  <div className="financial-badge-container">
-                    <motion.div
-                      className="financial-badge-box"
-                      onClick={() => setBadgeOpen(!badgeOpen)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="financial-badge-text">
-                        {currentDecision?.financial_term || "Financial Wellness"}
-                      </div>
-                    </motion.div>
-                    <AnimatePresence>
-                      {badgeOpen && currentDecision && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          className="badge-popup"
-                        >
-                          <p style={{ fontWeight: 'bold', marginBottom: '4px' }}>{currentDecision.financial_term}</p>
-                          <p>{currentDecision.definition}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Home Button */}
-                  <button onClick={handleGoHome} className="home-btn">
-                    <Image
-                      src="/option_page/home_tab.svg"
-                      alt="Home"
-                      width={42}
-                      height={42}
-                      className="home-btn-img"
-                    />
-                  </button>
-                </div>
-
-                {/* Decision Area */}
-                <div className="decision-area">
-                  <AnimatePresence mode="wait">
-                    {phase === 'decision' && currentDecision && (
-                      <motion.div
-                        key={currentDecision.scenario}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}
-                      >
-                        <p className="decision-scenario-large">{currentDecision.scenario}</p>
-                        <h2 className="decision-question-game">{currentDecision.question}</h2>
-
-                        <div className="options-list">
-                          {currentDecision.choices.map((choice, i) => (
-                            <button
-                              key={i}
-                              className="option-button"
-                              onClick={() => handleChoice(i)}
-                              disabled={chosenIndex !== null}
-                            >
-                              <Image
-                                src="/option_page/option_bar.svg"
-                                alt=""
-                                width={600}
-                                height={60}
-                                className="option-bar-img"
-                              />
-                              <div className="option-text-container">
-                                <div className="option-title">{choice.title}</div>
-                                <div className="option-impact">{choice.impact}</div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {phase === 'fact' && currentDecision && chosenIndex !== null && (
-                      <motion.div
-                        key="fact"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="fact-display"
-                        style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
-                      >
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2E385F' }}>The Result</h3>
-                        <div style={{ background: 'rgba(46, 56, 95, 0.05)', padding: '1rem', borderRadius: '1rem' }}>
-                          <p style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '0.5rem', fontWeight: 600 }}>{currentDecision.choices[chosenIndex].lesson}</p>
-                          <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.4 }}>{currentDecision.fact_after}</p>
-                        </div>
-                        <button
-                          onClick={handleContinue}
-                          className="bg-[#2E385F] text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
-                          style={{ alignSelf: 'center', marginTop: '0.5rem' }}
-                        >
-                          Next Year →
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {phase === 'loading' && <DecisionLoading age={playerState.age} />}
-                </div>
-              </div>
-            </div>
-
-            {/* ── 3RD MAIN DIV: Bottom Action Bar ────────────────── */}
-            <div className="game-bottom-bar">
-              <button
-                onClick={handleSave}
-                className="save-game-btn"
-                disabled={saving || saved}
-                title={saved ? 'Game Saved' : saving ? 'Saving...' : 'Save Game'}
-                aria-label="Save Game"
+              {/* Notebook container */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '1.6',
+                }}
               >
                 <Image
-                  src="/option_page/save_state_bar.svg"
-                  alt=""
-                  width={280}
-                  height={55}
-                  className="save-bar-img"
+                  src="/your_scence/Frame_board.svg"
+                  alt="Notebook Board"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  priority
                 />
-              </button>
+
+                {/* Notebook Content Layout */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    padding: '8% 5% 7% 6%',
+                    display: 'flex',
+                  }}
+                >
+                  {/* Left Half: Character Info */}
+                  <div
+                    style={{
+                      width: '40%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '2% 2% 0 2%',
+                    }}
+                  >
+                    <h2
+                      style={{
+                        fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                        color: '#344966',
+                        fontSize: 'clamp(1.5rem, 2vw, 2.2rem)',
+                        fontWeight: 'bold',
+                        marginBottom: '2%',
+                      }}
+                    >
+                      Story: {playerState.name.split(' ')[0]}
+                    </h2>
+                    
+                    {/* Stars decoration */}
+                    <div style={{ color: '#d3c4a9', fontSize: '1.2rem', marginBottom: '8%', letterSpacing: '4px' }}>
+                      <span style={{ fontSize: '0.8em' }}>✦</span> <span>✦</span> <span style={{ fontSize: '1.3em' }}>✦</span> <span>✦</span> <span style={{ fontSize: '0.8em' }}>✦</span>
+                    </div>
+                    
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        aspectRatio: '1.4',
+                        marginBottom: '4%',
+                        borderRadius: '0px',
+                        overflow: 'hidden',
+                        transform: 'translateX(-3%)',
+                      }}
+                    >
+                      <Image
+                        src={getSceneImage(playerState.character, playerState.currentYear)}
+                        alt={`Scene for Year ${playerState.currentYear}`}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        priority
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Half: Decision Area */}
+                  <div
+                    style={{
+                      width: '60%',
+                      padding: '2% 3vw',
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    {/* Home Button top right */}
+                    <button
+                      onClick={handleGoHome}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: 'clamp(80px, 7vw, 110px)',
+                        aspectRatio: '100/45',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                        zIndex: 20,
+                        transition: 'transform 0.1s',
+                      }}
+                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                      <Image src="/option_page/home_tab.svg" alt="Home Base" fill style={{ objectFit: 'contain' }} />
+                    </button>
+
+                    <div style={{ paddingRight: '3vw', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <AnimatePresence mode="wait">
+                        {phase === 'decision' && currentDecision && (
+                          <motion.div
+                            key="decision"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: '1vw', flex: 1 }}
+                          >
+                            <h3
+                              style={{
+                                color: '#4a82a6',
+                                fontSize: 'clamp(1rem, 1.4vw, 1.5rem)',
+                                fontWeight: 'bold',
+                                fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                                textAlign: 'center',
+                                minHeight: '2em',
+                              }}
+                            >
+                              {currentDecision.financial_term}
+                            </h3>
+
+                            <p
+                              style={{
+                                color: '#344966',
+                                fontSize: 'clamp(0.9rem, 1.1vw, 1.2rem)',
+                                fontWeight: 600,
+                                fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                                lineHeight: 1.4,
+                                textAlign: 'center',
+                                padding: '0 5%',
+                                minHeight: '6em',
+                              }}
+                            >
+                              {currentDecision.scenario} {currentDecision.question}
+                            </p>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1vw', marginTop: 'auto', marginBottom: '2vw' }}>
+                              {currentDecision.choices.map((choice, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => handleChoice(i)}
+                                  disabled={chosenIndex !== null}
+                                  style={{
+                                    position: 'relative',
+                                    width: '100%',
+                                    aspectRatio: '600/60',
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 0,
+                                    cursor: chosenIndex !== null ? 'default' : 'pointer',
+                                    opacity: chosenIndex !== null && chosenIndex !== i ? 0.5 : 1,
+                                    transition: 'opacity 0.2s, transform 0.1s',
+                                  }}
+                                  onMouseDown={(e) => {
+                                    if (chosenIndex === null) e.currentTarget.style.transform = 'scale(0.98)'
+                                  }}
+                                  onMouseUp={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)'
+                                  }}
+                                >
+                                  <Image
+                                    src="/option_page/option_bar.svg"
+                                    alt=""
+                                    fill
+                                    style={{ objectFit: 'contain' }}
+                                  />
+                                  <div
+                                    style={{
+                                      position: 'absolute',
+                                      inset: 0,
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                      color: 'white',
+                                      fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                                      padding: '0 10%',
+                                      paddingLeft: '15%',
+                                    }}
+                                  >
+                                    <div style={{ fontSize: 'clamp(0.75rem, 0.9vw, 1rem)', fontWeight: 'bold' }}>
+                                      {choice.title}
+                                    </div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+
+                        {phase === 'fact' && currentDecision && chosenIndex !== null && (
+                          <motion.div
+                            key="fact"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            style={{
+                              textAlign: 'center',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '1vw',
+                              flex: 1,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <h3 style={{ fontSize: 'clamp(1.2rem, 1.5vw, 1.8rem)', fontWeight: 800, color: '#344966' }}>
+                              The Result
+                            </h3>
+                            <div style={{ background: 'rgba(52, 73, 102, 0.08)', padding: '1.5rem', borderRadius: '1rem', width: '90%' }}>
+                              <p style={{ fontSize: 'clamp(0.9rem, 1.1vw, 1.2rem)', color: '#344966', lineHeight: 1.5, marginBottom: '0.5rem', fontWeight: 600 }}>
+                                {currentDecision.choices[chosenIndex].lesson}
+                              </p>
+                              <p style={{ fontSize: 'clamp(0.8rem, 0.9vw, 1rem)', color: '#415779', opacity: 0.9, lineHeight: 1.4 }}>
+                                {currentDecision.fact_after}
+                              </p>
+                            </div>
+                            <button
+                              onClick={handleContinue}
+                              style={{
+                                background: '#344966',
+                                color: 'white',
+                                padding: '0.8rem 2.5rem',
+                                borderRadius: '999px',
+                                fontWeight: 'bold',
+                                fontSize: '1rem',
+                                border: 'none',
+                                cursor: 'pointer',
+                                marginTop: '1rem',
+                                fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                              }}
+                              onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                              onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                            >
+                              Next Year →
+                            </button>
+                          </motion.div>
+                        )}
+
+                        {phase === 'loading' && (
+                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <DecisionLoading age={playerState.age} />
+                          </div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save State button anchored at bottom center */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '-4%',
+                    left: 0,
+                    right: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    zIndex: 20,
+                  }}
+                >
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || saved}
+                    style={{
+                      position: 'relative',
+                      width: 'clamp(220px, 22vw, 300px)',
+                      aspectRatio: '280/55',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      transition: 'transform 0.1s',
+                      transform: saved ? 'scale(0.95)' : 'scale(1)',
+                      opacity: saved ? 0.7 : 1,
+                    }}
+                    title="Save State"
+                  >
+                    <Image src="/option_page/save_state_bar.svg" alt="Save State" fill style={{ objectFit: 'contain' }} />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
       {phase === 'transition' && (
         <YearTransition year={playerState.currentYear} age={playerState.age} />
