@@ -126,20 +126,30 @@ export default function Home() {
         </>
       )}
 
-      {/* ── Load game modal — overlays landing ──────────── */}
+      {/* ── Load game page — standalone ──────────── */}
       {phase === 'loadgame' && (
-        <>
-          <LandingScreen {...landingProps} />
+        <motion.div
+          key="loadgame"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+        >
           <LoadGameModal onClose={() => setPhase('landing')} />
-        </>
+        </motion.div>
       )}
 
-      {/* ── Scenes journal modal — overlays landing ──────── */}
+      {/* ── Scenes journal page — standalone ──────── */}
       {phase === 'scenes' && (
-        <>
-          <LandingScreen {...landingProps} />
+        <motion.div
+          key="scenes"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+        >
           <ScenesModal onClose={() => setPhase('landing')} />
-        </>
+        </motion.div>
       )}
 
       {/* Leaderboard toggle shortcut (visible on landing) */}

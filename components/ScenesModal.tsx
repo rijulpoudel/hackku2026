@@ -1,243 +1,265 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CharacterType, PlayerState } from '@/types/game'
-import { getAllScenesForCharacter, SceneEntry } from '@/lib/character-decisions'
-
-const CHARACTER_EMOJI: Record<CharacterType, string> = {
-  maya: '🔬',
-  alex: '💼',
-  jordan: '🎨',
-  sam: '📚',
-}
-
-const CHARACTER_NAMES: Record<CharacterType, string> = {
-  maya: 'Maya Chen — PhD Student',
-  alex: 'Alex Rivera — Corporate Tech',
-  jordan: 'Jordan Kim — Freelance Creative',
-  sam: 'Sam Patel — Public Teacher',
-}
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { listSaves, SaveSlot } from '@/lib/save-game'
+import { playSfx } from '@/lib/audio'
+import { CharacterType } from '@/types/game'
 
 interface Props {
   onClose: () => void
 }
 
+const CHARACTERS: CharacterType[] = ['maya', 'alex', 'jordan', 'sam']
+
+const CHAR_IMAGES: Record<CharacterType, string> = {
+  maya: '/your_scence/maya.svg',
+  alex: '/your_scence/alex.svg',
+  jordan: '/your_scence/jordan.svg',
+  sam: '/your_scence/sam.svg',
+}
+
 export function ScenesModal({ onClose }: Props) {
-  const [character, setCharacter] = useState<CharacterType | null>(null)
-  const [currentYear, setCurrentYear] = useState(0)
-  const [scenes, setScenes] = useState<SceneEntry[]>([])
-  const [expanded, setExpanded] = useState<number | null>(null)
+  const router = useRouter()
+  const [saves, setSaves] = useState<SaveSlot[]>([])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    // Read the in-progress game state
-    const raw = sessionStorage.getItem('launch_current_state')
-    if (raw) {
-      try {
-        const state: PlayerState = JSON.parse(raw)
-        setCharacter(state.character)
-        setCurrentYear(state.currentYear)
-        setScenes(getAllScenesForCharacter(state.character))
-        return
-      } catch { /* fall through */ }
-    }
-    // No active game — default to alex so the modal isn't empty
-    const storedChar = sessionStorage.getItem('launch_character') as CharacterType
-    const char = storedChar ?? 'alex'
-    setCharacter(char)
-    setCurrentYear(0)
-    setScenes(getAllScenesForCharacter(char))
+    setSaves(listSaves())
   }, [])
 
-  // A scene is unlocked if the player has already completed it (year < currentYear)
-  // or currently on it (year === currentYear, partially shown)
-  const isUnlocked = (year: number) => year < currentYear
-  const isCurrent = (year: number) => year === currentYear
+  function handleLoad(slot: SaveSlot) {
+    playSfx('click')
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_load_save', JSON.stringify(slot.playerState))
+      sessionStorage.setItem('launch_character', slot.character)
+      sessionStorage.setItem('launch_name', slot.characterName)
+    }
+    router.push('/game')
+  }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 100,
-          background: 'rgba(0,0,0,0.8)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1.5rem',
-        }}
-      >
+    <main className="landing-main" style={{ zIndex: 10 }}>
+      <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 24 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.92 }}
-          transition={{ duration: 0.3 }}
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: '#12121e',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '1rem',
-            padding: '1.75rem',
-            width: '100%',
-            maxWidth: '560px',
-            maxHeight: '85vh',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="landing-content"
+          style={{ flexDirection: 'column' }}
         >
-          {/* Header */}
-          <div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f59e0b', marginBottom: '0.2rem' }}>
-              {character ? CHARACTER_EMOJI[character] : '📖'} Scene Journal
-            </h2>
-            <p style={{ fontSize: '0.72rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              {character ? CHARACTER_NAMES[character] : 'Start a game to track your scenes'}
-            </p>
-            {currentYear === 0 && (
-              <p style={{ fontSize: '0.78rem', color: '#4b5563', marginTop: '0.5rem' }}>
-                Play the game to unlock scenes as you progress through each year.
-              </p>
-            )}
-          </div>
-
-          {/* Scene list */}
-          <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-            {scenes.map((scene) => {
-              const unlocked = isUnlocked(scene.year)
-              const current = isCurrent(scene.year)
-              const isOpen = expanded === scene.year
-
-              return (
-                <motion.div
-                  key={scene.year}
-                  initial={false}
-                  style={{
-                    border: `1px solid ${current ? 'rgba(245,158,11,0.4)' : unlocked ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)'}`,
-                    borderRadius: '0.6rem',
-                    overflow: 'hidden',
-                    background: current
-                      ? 'rgba(245,158,11,0.06)'
-                      : unlocked
-                      ? 'rgba(255,255,255,0.03)'
-                      : 'rgba(0,0,0,0.2)',
-                    opacity: unlocked || current ? 1 : 0.45,
-                  }}
-                >
-                  {/* Row header — always visible */}
-                  <button
-                    onClick={() => {
-                      if (unlocked) setExpanded(isOpen ? null : scene.year)
-                    }}
-                    disabled={!unlocked}
-                    style={{
-                      width: '100%',
-                      background: 'transparent',
-                      border: 'none',
-                      padding: '0.65rem 0.85rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      cursor: unlocked ? 'pointer' : 'default',
-                      textAlign: 'left',
-                    }}
-                  >
-                    {/* Year badge */}
-                    <span style={{
-                      fontSize: '0.65rem',
-                      fontWeight: 700,
-                      color: current ? '#f59e0b' : unlocked ? '#9ca3af' : '#4b5563',
-                      minWidth: '3rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    }}>
-                      Yr {scene.year}
-                      <br />
-                      <span style={{ fontWeight: 400 }}>Age {scene.age}</span>
-                    </span>
-
-                    {/* Title */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      {unlocked ? (
-                        <>
-                          <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.1rem' }}>
-                            {scene.financial_term}
-                          </p>
-                          <p style={{ fontSize: '0.7rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {scene.scenario}
-                          </p>
-                        </>
-                      ) : current ? (
-                        <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#f59e0b' }}>
-                          ▶ Currently Playing
-                        </p>
-                      ) : (
-                        <p style={{ fontSize: '0.8rem', color: '#4b5563' }}>
-                          🔒 Locked — reach Year {scene.year} to unlock
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Expand indicator */}
-                    {unlocked && (
-                      <span style={{ color: '#4b5563', fontSize: '0.7rem' }}>
-                        {isOpen ? '▲' : '▼'}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Expanded detail */}
-                  <AnimatePresence>
-                    {isOpen && unlocked && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        style={{ overflow: 'hidden' }}
-                      >
-                        <div style={{
-                          padding: '0 0.85rem 0.85rem',
-                          borderTop: '1px solid rgba(255,255,255,0.06)',
-                        }}>
-                          <p style={{ fontSize: '0.78rem', color: '#d1d5db', margin: '0.6rem 0 0.3rem', fontStyle: 'italic' }}>
-                            "{scene.scenario}"
-                          </p>
-                          <p style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600 }}>
-                            {scene.question}
-                          </p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          <button
-            onClick={onClose}
+          <div
             style={{
-              padding: '0.55rem',
-              borderRadius: '0.5rem',
-              border: '1px solid rgba(255,255,255,0.1)',
-              background: 'transparent',
-              color: '#6b7280',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              flexShrink: 0,
+              position: 'relative',
+              width: '70vw',
+              maxWidth: '1400px',
+              marginTop: '120px',
             }}
           >
-            Close
-          </button>
+            {/* Animated elements from landing screen context */}
+            <motion.div
+              className="landing-butterfly"
+              animate={{
+                rotate: [0, -3, 0, 3, 0],
+                scaleY: [1, 1.05, 1, 0.95, 1],
+                filter: [
+                  'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                  'brightness(1.3) drop-shadow(0 0 12px rgba(255,255,255,0.6))',
+                  'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                ],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ bottom: '90%', left: '-10%', width: '15%' }}
+            >
+              <Image
+                src="/landing/butter fly.svg"
+                alt="Butterfly"
+                width={150}
+                height={150}
+                className="landing-responsive-img"
+              />
+            </motion.div>
+
+            <motion.div
+              className="landing-constellation"
+              animate={{
+                opacity: [0.3, 1, 0.3],
+                filter: [
+                  'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                  'brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.9))',
+                  'brightness(0.8) drop-shadow(0 0 0px rgba(255,255,255,0))',
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ bottom: '85%', right: '-12%', width: '25%' }}
+            >
+              <Image
+                src="/landing/CONSETELATION.svg"
+                alt="Constellation"
+                width={250}
+                height={250}
+                className="landing-responsive-img"
+              />
+            </motion.div>
+
+            {/* Notebook container */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '1.6',
+              }}
+            >
+              <Image
+                src="/your_scence/Frame_board.svg"
+                alt="Notebook Board"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+
+              {/* Back to landing overlay button */}
+              <button
+                onClick={onClose}
+                style={{
+                  position: 'absolute',
+                  top: '-5%',
+                  right: '0%',
+                  zIndex: 30,
+                  background: 'rgba(53, 67, 102, 0.8)',
+                  color: '#fff',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  padding: '0.5rem 1rem',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                }}
+              >
+                ← Back to main menu
+              </button>
+
+              {/* Notebook Content Layout */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  padding: '7% 6% 8% 6%',
+                  display: 'flex',
+                }}
+              >
+                {/* Left Panel */}
+                <div
+                  style={{
+                    width: '32%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    paddingTop: '6%',
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                      color: '#344966',
+                      fontSize: 'clamp(1rem, 1.8vw, 1.8rem)',
+                      fontWeight: 400,
+                      marginBottom: '40%',
+                    }}
+                  >
+                    Your Scenes
+                  </h2>
+                  <div style={{ padding: '0 10%', marginTop: '5%' }}>
+                    <p
+                      style={{
+                        fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                        color: '#415779',
+                        fontSize: 'clamp(0.9rem, 1.4vw, 1.3rem)',
+                        fontWeight: 700,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      These are all the scenes you have tried for each character.
+                      Take a look and start from where you last were!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Panel - Saves List (2x2 Grid) */}
+                <div
+                  style={{
+                    width: '68%',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '2vw',
+                    paddingLeft: '5vw',
+                    paddingRight: '3vw',
+                    paddingBottom: '2rem',
+                    paddingTop: '2%',
+                    justifyItems: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {CHARACTERS.map((char) => {
+                    const latestSave = saves.find((s) => s.character === char)
+                    const isLocked = !latestSave
+                    const charImage = CHAR_IMAGES[char]
+
+                    return (
+                      <motion.div
+                        key={char}
+                        whileHover={!isLocked ? { scale: 1.05 } : {}}
+                        whileTap={!isLocked ? { scale: 0.95 } : {}}
+                        onClick={() => {
+                          if (!isLocked && latestSave) handleLoad(latestSave)
+                        }}
+                        style={{
+                          position: 'relative',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          cursor: isLocked ? 'default' : 'pointer',
+                        }}
+                      >
+                        {/* Frame Container */}
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: 'clamp(120px, 11vw, 180px)',
+                            aspectRatio: '1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Image
+                            src={charImage}
+                            alt={char}
+                            fill
+                            style={{ objectFit: 'contain' }}
+                          />
+
+                          {isLocked && (
+                            <Image
+                              src="/your_scence/locked.svg"
+                              alt="Locked"
+                              fill
+                              style={{ objectFit: 'contain', zIndex: 10 }}
+                            />
+                          )}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+    </main>
   )
 }
