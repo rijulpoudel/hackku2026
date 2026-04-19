@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+const SCRIPT = `"My name is [your name] and this is my story. I graduated last spring with thirty-four thousand dollars in student loans and exactly two thousand one hundred dollars in savings. Every financial decision I make from here compounds — some in my favor, some against me. The choices are never obvious. The best option rarely feels like the best option in the moment. Over the next twelve years I'll learn what money actually is, how it moves, and how to make it work for me instead of against me. This is life after graduation."`
+
 interface Props {
   characterName: string
   onCloned: (voiceId: string) => void
@@ -145,11 +147,36 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
       <AnimatePresence mode="wait">
         {state === 'idle' && (
           <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}
           >
-            <p style={{ fontSize: '0.68rem', opacity: 0.55, fontStyle: 'italic' }}>
-              Tip: Read anything aloud — a book paragraph, describe your day, count slowly. Just keep talking.
+            <p style={{ fontSize: '0.68rem', opacity: 0.6, margin: 0 }}>
+              Read this script aloud when recording:
             </p>
+
+            {/* Script box */}
+            <div style={{
+              position: 'relative',
+              background: 'rgba(0,0,0,0.25)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: '0.6rem',
+              padding: '0.75rem 0.85rem',
+            }}>
+              <p style={{
+                fontSize: '0.68rem',
+                lineHeight: 1.65,
+                color: 'rgba(255,255,255,0.85)',
+                margin: 0,
+                fontStyle: 'italic',
+              }}>
+                {SCRIPT}
+              </p>
+              <CopyButton text={SCRIPT} />
+            </div>
+
+            <p style={{ fontSize: '0.62rem', opacity: 0.45, margin: 0 }}>
+              Replace [your name] with your actual name. Speak naturally — don't slow down.
+            </p>
+
             <div style={{ display: 'flex', gap: '0.55rem' }}>
               <button onClick={startRecording} style={btn('#4f7fff')}>
                 ● Start Recording
@@ -250,6 +277,40 @@ export function VoiceRecorder({ characterName, onCloned, onSkip }: Props) {
         )}
       </AnimatePresence>
     </motion.div>
+  )
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  function copy() {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <button
+      onClick={copy}
+      title="Copy script"
+      style={{
+        position: 'absolute',
+        top: '0.4rem',
+        right: '0.4rem',
+        background: copied ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        borderRadius: '0.35rem',
+        color: copied ? '#86efac' : 'rgba(255,255,255,0.55)',
+        fontSize: '0.6rem',
+        padding: '0.2rem 0.45rem',
+        cursor: 'pointer',
+        fontFamily: `'HYWenHei', system-ui, sans-serif`,
+        transition: 'all 0.2s',
+      }}
+    >
+      {copied ? '✓ Copied' : 'Copy'}
+    </button>
   )
 }
 

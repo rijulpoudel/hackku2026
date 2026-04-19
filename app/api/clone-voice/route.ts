@@ -48,9 +48,32 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json()
-    console.log('ElevenLabs voice cloned OK — voice_id:', data.voice_id)
-    // ElevenLabs returns { voice_id: string, name: string }
-    return NextResponse.json({ voice_id: data.voice_id })
+    const voiceId: string = data.voice_id
+    console.log('ElevenLabs voice cloned OK — voice_id:', voiceId)
+
+    // Auto-apply optimal voice settings — low stability for natural variation,
+    // high similarity so it sounds like the actual recording
+    try {
+      await fetch(`https://api.elevenlabs.io/v1/voices/${voiceId}/settings/edit`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stability: 0.38,
+          similarity_boost: 0.85,
+          style: 0.25,
+          use_speaker_boost: true,
+        }),
+      })
+      console.log('Voice settings applied — stability:0.38, similarity:0.85')
+    } catch (settingsErr) {
+      // Non-fatal — cloning still succeeded, just with default settings
+      console.warn('Could not apply voice settings (non-fatal):', settingsErr)
+    }
+
+    return NextResponse.json({ voice_id: voiceId })
   } catch (err) {
     console.error('Clone-voice route error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
