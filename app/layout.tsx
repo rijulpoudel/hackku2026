@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GlobalBanner } from "@/components/GlobalBanner";
+import { GlobalClickSound } from "@/components/GlobalClickSound";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="app-body">
         <GlobalBanner />
+        <GlobalClickSound />
         {children}
       </body>
     </html>

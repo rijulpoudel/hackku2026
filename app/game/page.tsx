@@ -228,6 +228,13 @@ export default function GamePage() {
     router.push('/')
   }
 
+  // Stop narration when the game page unmounts (back button, verdict, etc.)
+  useEffect(() => {
+    return () => {
+      stopNarration()
+    }
+  }, [])
+
   // Initialize on mount
   useEffect(() => {
     if (initialized.current) return

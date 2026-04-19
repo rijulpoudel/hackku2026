@@ -6,13 +6,14 @@ interface Props {
   onStart: () => void
   onContinue: () => void
   onLeaderboard: () => void
+  onScenes: () => void
   onCredits: () => void
   onLoadGame: () => void
   hasSavedGame: boolean
   hasSaveSlots: boolean
 }
 
-export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
+export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, onCredits, onLoadGame, hasSavedGame, hasSaveSlots }: Props) {
   return (
     <main className="landing-main">
       <motion.div
@@ -113,11 +114,11 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onCredits, o
               <Image src="/landing/continue.svg" alt="Continue" width={230} height={72} className="landing-responsive-img" />
             </motion.button>
 
-            {/* Scene — leaderboard */}
+            {/* Scene — scenes journal */}
             <motion.button
               type="button"
               aria-label="Scene"
-              onClick={onLeaderboard}
+              onClick={onScenes}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"

@@ -1,7 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { GeneratedChoice } from '@/types/game'
-import { playSfx } from '@/lib/audio'
+// click sound handled globally by GlobalClickSound
 
 const LABEL_COLORS: Record<string, string> = {
   Best: 'choice-card--best',
@@ -39,7 +39,6 @@ export function ChoiceCard({ choice, index, onSelect, isChosen, isDisabled, anyC
 
   function handleClick() {
     if (!isDisabled) {
-      playSfx('click')
       onSelect()
     }
   }

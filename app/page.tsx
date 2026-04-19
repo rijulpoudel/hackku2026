@@ -7,12 +7,13 @@ import { CharacterSelect } from '@/components/CharacterSelect'
 import { Leaderboard } from '@/components/Leaderboard'
 import { CreditsModal } from '@/components/CreditsModal'
 import { LoadGameModal } from '@/components/LoadGameModal'
+import { ScenesModal } from '@/components/ScenesModal'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { CharacterType } from '@/types/game'
 import { hasSaves } from '@/lib/save-game'
 import { playSfx } from '@/lib/audio'
 
-type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame'
+type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame' | 'scenes'
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>('loading')
@@ -54,11 +55,21 @@ export default function Home() {
     setPhase('loadgame')
   }
 
+  function handleStart() {
+    // Clear any in-progress game so Continue reflects the new game after it starts
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('launch_current_state')
+    }
+    setHasSavedGame(false)
+    setPhase('character')
+  }
+
   // Shared landing props
   const landingProps = {
-    onStart: () => setPhase('character'),
+    onStart: handleStart,
     onContinue: handleContinue,
     onLeaderboard: () => setPhase('leaderboard'),
+    onScenes: () => setPhase('scenes'),
     onCredits: () => setPhase('credits'),
     onLoadGame: handleLoadGame,
     hasSavedGame,
@@ -120,6 +131,14 @@ export default function Home() {
         <>
           <LandingScreen {...landingProps} />
           <LoadGameModal onClose={() => setPhase('landing')} />
+        </>
+      )}
+
+      {/* ── Scenes journal modal — overlays landing ──────── */}
+      {phase === 'scenes' && (
+        <>
+          <LandingScreen {...landingProps} />
+          <ScenesModal onClose={() => setPhase('landing')} />
         </>
       )}
 
