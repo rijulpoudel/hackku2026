@@ -11,36 +11,98 @@ import { useRouter } from 'next/navigation'
 
 type GamePhase = 'transition' | 'loading' | 'decision' | 'fact' | 'complete'
 
-function buildInitialState(character: CharacterType, name: string): PlayerState {
-  const salaryByCharacter: Record<CharacterType, number> = {
-    employee: 52000,
-    freelancer: 48000,
-    student: 28000,
-    'side-hustler': 58000,
-  }
+type CharacterConfig = {
+  salary: number
+  netWorth: number
+  savings: number
+  loanBalance: number
+  monthlyExpenses: number
+  isFreelancing: boolean
+  isPSLFEligible: boolean
+  isPensionEnrolled: boolean
+  isGradStudent: boolean
+  hasLLC: boolean
+}
 
+const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
+  maya: {
+    salary: 28000,
+    netWorth: -34000,
+    savings: 0,
+    loanBalance: 34000,
+    monthlyExpenses: 1800,
+    isFreelancing: false,
+    isPSLFEligible: false, // changes if she takes university job
+    isPensionEnrolled: false,
+    isGradStudent: true,
+    hasLLC: false,
+  },
+  alex: {
+    salary: 58000,
+    netWorth: -29900,
+    savings: 2100,
+    loanBalance: 32000,
+    monthlyExpenses: 2800,
+    isFreelancing: false,
+    isPSLFEligible: false,
+    isPensionEnrolled: false,
+    isGradStudent: false,
+    hasLLC: false,
+  },
+  jordan: {
+    salary: 0,
+    netWorth: -36000,
+    savings: 0,
+    loanBalance: 36000,
+    monthlyExpenses: 2200,
+    isFreelancing: true,
+    isPSLFEligible: false,
+    isPensionEnrolled: false,
+    isGradStudent: false,
+    hasLLC: false,
+  },
+  sam: {
+    salary: 38000,
+    netWorth: -31900,
+    savings: 2100,
+    loanBalance: 34000,
+    monthlyExpenses: 2000,
+    isFreelancing: false,
+    isPSLFEligible: true, // teacher at public school = PSLF eligible day one
+    isPensionEnrolled: false, // they choose in scene 3
+    isGradStudent: false,
+    hasLLC: false,
+  },
+}
+
+function buildInitialState(character: CharacterType, name: string): PlayerState {
+  const cfg = CHARACTER_CONFIG[character]
   return {
     userId: `guest_${Date.now()}`,
     name,
     character,
     age: 22,
     currentYear: 1,
-    netWorth: -31900,
-    annualSalary: salaryByCharacter[character],
-    savings: 2100,
-    loanBalance: 34000,
+    netWorth: cfg.netWorth,
+    annualSalary: cfg.salary,
+    savings: cfg.savings,
+    loanBalance: cfg.loanBalance,
     retirement401k: 0,
     creditCardDebt: 0,
-    monthlyExpenses: 2800,
+    monthlyExpenses: cfg.monthlyExpenses,
     ownsHome: false,
     hasEmergencyFund: false,
-    isFreelancing: character === 'freelancer',
+    isFreelancing: cfg.isFreelancing,
     hasInvested: false,
     took401kMatch: false,
     filedTaxesCorrectly: false,
     hasNegotiatedSalary: false,
     hasChildren: false,
     hadJobLoss: false,
+    isPSLFEligible: cfg.isPSLFEligible,
+    isPensionEnrolled: cfg.isPensionEnrolled,
+    isGradStudent: cfg.isGradStudent,
+    hasLLC: cfg.hasLLC,
     decisions: [],
   }
 }
@@ -169,7 +231,7 @@ export default function GamePage() {
     if (initialized.current) return
     initialized.current = true
 
-    let character: CharacterType = 'employee'
+    let character: CharacterType = 'alex'
     let name = 'Graduate'
 
     if (typeof window !== 'undefined') {

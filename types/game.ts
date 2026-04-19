@@ -1,8 +1,8 @@
 export type CharacterType =
-  | "employee"
-  | "freelancer"
-  | "student"
-  | "side-hustler";
+  | "maya"   // PhD Student → Academic/Research
+  | "alex"   // Corporate Tech
+  | "jordan" // Freelance Creative
+  | "sam";   // Public School Teacher
 
 export type ChoiceLabel =
   | "Best"
@@ -42,6 +42,12 @@ export interface PlayerState {
   hasNegotiatedSalary: boolean;
   hasChildren: boolean;
   hadJobLoss: boolean;
+
+  // Character-specific flags
+  isPSLFEligible: boolean;   // maya (university job) or sam
+  isPensionEnrolled: boolean; // sam
+  isGradStudent: boolean;     // maya
+  hasLLC: boolean;            // jordan
 
   // Full decision history
   decisions: DecisionRecord[];

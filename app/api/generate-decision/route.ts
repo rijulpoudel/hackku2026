@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateNextDecision } from "@/lib/gemini";
-import { ANCHOR_DECISIONS } from "@/lib/anchor-decisions";
+import { getCharacterDecision } from "@/lib/character-decisions";
 import { FALLBACK_DECISIONS } from "@/lib/fallback-decisions";
 import { PlayerState } from "@/types/game";
 
 export async function POST(req: NextRequest) {
   const playerState: PlayerState = await req.json();
 
-  // Years 1-3: always use hard-coded anchor decisions
-  const anchor = ANCHOR_DECISIONS[playerState.currentYear];
-  if (anchor) return NextResponse.json(anchor);
+  // All 12 years: use character-specific hard-coded decisions
+  const characterDecision = getCharacterDecision(
+    playerState.character,
+    playerState.currentYear,
+  );
+  if (characterDecision) return NextResponse.json(characterDecision);
 
-  // Years 4-12: Gemini with retry logic
+  // Fallback: try Gemini (if somehow we go beyond year 12)
   let attempts = 0;
   while (attempts < 2) {
     try {
@@ -23,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Fallback if Gemini fails twice
+  // Last resort fallback
   const fallback = FALLBACK_DECISIONS[playerState.currentYear];
   if (fallback) return NextResponse.json(fallback);
 
