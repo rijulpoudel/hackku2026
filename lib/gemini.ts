@@ -39,11 +39,22 @@ export async function generateNextDecision(
 
   const scenarioType = pickScenarioType(playerState);
 
+  const characterDesc =
+    playerState.character === 'custom'
+      ? playerState.isFreelancing
+        ? 'custom freelancer / self-employed'
+        : playerState.annualSalary >= 80000
+          ? 'custom high-earning professional'
+          : playerState.annualSalary >= 45000
+            ? 'custom mid-career professional'
+            : 'custom entry-level worker'
+      : playerState.character;
+
   const prompt = `You are the game engine for LAUNCH, a financial life simulator for
 recent college graduates. Generate a realistic financial scenario for this player.
 
 PLAYER PROFILE:
-- Character: ${playerState.character} (employee / freelancer / student / side-hustler)
+- Character: ${characterDesc}
 - Current age: ${playerState.age}
 - Net worth: $${playerState.netWorth.toLocaleString()}
 - Annual salary: $${playerState.annualSalary.toLocaleString()}

@@ -54,9 +54,10 @@ const CHARACTERS: Array<{
 
 interface Props {
   onSelect: (character: CharacterType, name: string) => void
+  onCustom?: () => void
 }
 
-export function CharacterSelect({ onSelect }: Props) {
+export function CharacterSelect({ onSelect, onCustom }: Props) {
   const [hoveredChar, setHoveredChar] = useState(CHARACTERS[0])
 
   return (
@@ -162,6 +163,22 @@ export function CharacterSelect({ onSelect }: Props) {
             ))}
           </div>
         </div>
+
+          {/* Custom character button — bottom of overlay */}
+          {onCustom && (
+            <motion.button
+              className="custom-char-cta"
+              onClick={() => { playSfx('click'); onCustom() }}
+              onMouseEnter={() => playSfx('hover')}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              ✦ Make Your Own Story
+            </motion.button>
+          )}
       </div>
     </motion.div>
   )

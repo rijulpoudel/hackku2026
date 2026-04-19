@@ -9,6 +9,7 @@ const CHARACTER_EMOJI: Record<CharacterType, string> = {
   alex: '💼',
   jordan: '🎨',
   sam: '📚',
+  custom: '✨',
 }
 
 const CHARACTER_NAMES: Record<CharacterType, string> = {
@@ -16,6 +17,7 @@ const CHARACTER_NAMES: Record<CharacterType, string> = {
   alex: 'Alex Rivera — Corporate Tech',
   jordan: 'Jordan Kim — Freelance Creative',
   sam: 'Sam Patel — Public Teacher',
+  custom: 'Your Custom Story',
 }
 
 interface Props {

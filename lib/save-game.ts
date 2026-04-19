@@ -8,6 +8,7 @@ const CHARACTER_EMOJI: Record<CharacterType, string> = {
   alex: "💼",
   jordan: "🎨",
   sam: "📚",
+  custom: "✨",
 };
 
 const CHARACTER_TITLE: Record<CharacterType, string> = {
@@ -15,6 +16,7 @@ const CHARACTER_TITLE: Record<CharacterType, string> = {
   alex: "Corporate Tech",
   jordan: "Freelance Creative",
   sam: "Public Teacher",
+  custom: "Custom Character",
 };
 
 export interface SaveSlot {

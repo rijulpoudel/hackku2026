@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LandingScreen } from '@/components/LandingScreen'
 import { CharacterSelect } from '@/components/CharacterSelect'
+import { CustomCharacterForm, CustomConfig } from '@/components/CustomCharacterForm'
 import { Leaderboard } from '@/components/Leaderboard'
 import { CreditsModal } from '@/components/CreditsModal'
 import { LoadGameModal } from '@/components/LoadGameModal'
@@ -13,7 +14,7 @@ import { CharacterType } from '@/types/game'
 import { hasSaves } from '@/lib/save-game'
 import { playSfx } from '@/lib/audio'
 
-type Phase = 'loading' | 'landing' | 'character' | 'leaderboard' | 'credits' | 'loadgame' | 'scenes'
+type Phase = 'loading' | 'landing' | 'character' | 'custom-form' | 'leaderboard' | 'credits' | 'loadgame' | 'scenes'
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>('loading')
@@ -64,6 +65,17 @@ export default function Home() {
     setPhase('character')
   }
 
+  function handleCustomComplete(config: CustomConfig) {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('launch_character', 'custom')
+      sessionStorage.setItem('launch_name', config.name)
+      sessionStorage.setItem('launch_custom_config', JSON.stringify(config))
+      sessionStorage.removeItem('launch_load_save')
+      sessionStorage.removeItem('launch_current_state')
+    }
+    router.push('/game')
+  }
+
   // Shared landing props
   const landingProps = {
     onStart: handleStart,
@@ -98,7 +110,20 @@ export default function Home() {
 
         {/* ── Character select ──────────────────────────── */}
         {phase === 'character' && (
-          <CharacterSelect key="character" onSelect={handleCharacterSelect} />
+          <CharacterSelect
+            key="character"
+            onSelect={handleCharacterSelect}
+            onCustom={() => setPhase('custom-form')}
+          />
+        )}
+
+        {/* ── Custom character form ─────────────────────── */}
+        {phase === 'custom-form' && (
+          <CustomCharacterForm
+            key="custom-form"
+            onComplete={handleCustomComplete}
+            onBack={() => setPhase('character')}
+          />
         )}
 
         {/* ── Leaderboard ───────────────────────────────── */}

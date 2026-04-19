@@ -784,11 +784,12 @@ const SAM_DECISIONS: Record<number, GeneratedDecision> = {
 };
 
 // ─── Master lookup ────────────────────────────────────────────────────────────
-const ALL_DECISIONS: Record<CharacterType, Record<number, GeneratedDecision>> = {
+const ALL_DECISIONS: Partial<Record<CharacterType, Record<number, GeneratedDecision>>> = {
   maya: MAYA_DECISIONS,
   alex: ALEX_DECISIONS,
   jordan: JORDAN_DECISIONS,
   sam: SAM_DECISIONS,
+  // 'custom' intentionally omitted — Gemini handles all years
 };
 
 export function getCharacterDecision(

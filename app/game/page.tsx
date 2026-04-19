@@ -25,7 +25,7 @@ type CharacterConfig = {
   hasLLC: boolean
 }
 
-const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
+const CHARACTER_CONFIG: Partial<Record<CharacterType, CharacterConfig>> = {
   maya: {
     salary: 28000,
     netWorth: -34000,
@@ -76,8 +76,46 @@ const CHARACTER_CONFIG: Record<CharacterType, CharacterConfig> = {
   },
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildCustomInitialState(name: string, cfg: any): PlayerState {
+  const loanBalance     = cfg?.loanBalance ?? 34000
+  const savings         = cfg?.savings ?? 2100
+  const creditCardDebt  = cfg?.hasCreditCardDebt ? 3000 : 0
+  const salary          = cfg?.salary ?? 45000
+  const netWorth        = savings - loanBalance - creditCardDebt
+  return {
+    userId:              `guest_${Date.now()}`,
+    name,
+    character:           'custom',
+    age:                 22,
+    currentYear:         1,
+    netWorth,
+    annualSalary:        salary,
+    savings,
+    loanBalance,
+    retirement401k:      0,
+    creditCardDebt,
+    monthlyExpenses:     Math.max(800, Math.round(salary * 0.65 / 12)),
+    ownsHome:            false,
+    hasEmergencyFund:    savings >= 6000,
+    isFreelancing:       cfg?.isFreelancing ?? false,
+    hasInvested:         false,
+    took401kMatch:       false,
+    filedTaxesCorrectly: false,
+    hasNegotiatedSalary: false,
+    hasChildren:         false,
+    hadJobLoss:          false,
+    isPSLFEligible:      false,
+    isPensionEnrolled:   false,
+    isGradStudent:       false,
+    hasLLC:              cfg?.isFreelancing ?? false,
+    decisions:           [],
+  }
+}
+
 function buildInitialState(character: CharacterType, name: string): PlayerState {
   const cfg = CHARACTER_CONFIG[character]
+  if (!cfg) return buildCustomInitialState(name, null)
   return {
     userId: `guest_${Date.now()}`,
     name,
@@ -265,6 +303,17 @@ export default function GamePage() {
       const storedName = sessionStorage.getItem('launch_name')
       if (storedChar) character = storedChar
       if (storedName) name = storedName
+
+      // Custom character — build from the stored config
+      if (character === 'custom') {
+        const customRaw = sessionStorage.getItem('launch_custom_config')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const customCfg = customRaw ? (JSON.parse(customRaw) as any) : null
+        const initialState = buildCustomInitialState(name, customCfg)
+        setPlayerState(initialState)
+        setTimeout(() => fetchNextDecision(initialState), 2000)
+        return
+      }
     }
 
     const initialState = buildInitialState(character, name)
