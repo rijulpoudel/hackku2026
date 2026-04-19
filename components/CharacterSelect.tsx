@@ -67,12 +67,12 @@ export function CharacterSelect({ onSelect }: Props) {
 
   function handleCharClick(char: typeof CHARACTERS[0]) {
     playSfx('click')
-    setPendingChar(char)
+    // Normal characters go straight to the game — no voice step
+    sessionStorage.removeItem('launch_custom_voice_id')
+    onSelect(char.type, char.name)
   }
 
   function confirmAndStart(char: typeof CHARACTERS[0]) {
-    // Clear any stale voice ID from a previous session
-    sessionStorage.removeItem('launch_custom_voice_id')
     onSelect(char.type, char.name)
   }
 
