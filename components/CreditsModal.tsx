@@ -7,8 +7,8 @@ interface Props {
 
 const CREDITS = [
   { role: 'Frontend', name: 'Rijul Poudel' },
-  { role: 'Backend & AI', name: 'Team Member 2' },
-  { role: 'Design & Assets', name: 'Team Member 3' },
+  { role: 'Backend & AI', name: 'Mariska Rai' },
+  { role: 'Design & Assets', name: 'Shashwat Ghimire' },
 ]
 
 export function CreditsModal({ onClose }: Props) {
