@@ -45,6 +45,7 @@ export function LoadGameModal({ onClose }: Props) {
     alex: "/your_scence/Corporate employee.svg",
     jordan: "/your_scence/Freelance.svg",
     sam: "/your_scence/Side hustler.svg",
+    custom: "/your_scence/Corporate employee.svg",
   };
 
   return (
