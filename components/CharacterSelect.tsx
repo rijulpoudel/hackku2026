@@ -1,5 +1,5 @@
 'use client'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import Image from 'next/image'
 import { CharacterType } from '@/types/game'
@@ -61,32 +61,47 @@ export function CharacterSelect({ onSelect }: Props) {
       className="character-select-wrapper"
     >
       <div className="character-frame-board">
+        {/* Main Background Board */}
         <Image 
           src="/your_scence/Frame_board.svg" 
-          alt="" 
-          width={1200} 
-          height={800} 
+          alt="Selection Board" 
+          width={1400} 
+          height={900} 
           className="frame-board-img"
+          priority
         />
 
         <div className="character-content-overlay">
+          {/* Left Side: Portfolio / Story Details */}
           <div className="character-left-section">
             <h2 className="character-pick-title">Pick your story</h2>
             
             <div className="character-description-container">
               <Image 
                 src="/your_scence/Description box.svg" 
-                alt="" 
-                width={400} 
-                height={300} 
+                alt="Description Backdrop" 
+                width={350} 
+                height={270} 
                 className="description-box-img"
               />
               <div className="description-text-overlay">
-                <p className="description-text" style={{ whiteSpace: 'pre-line' }}>{hoveredChar.description}</p>
+                <AnimatePresence mode="wait">
+                  <motion.p 
+                    key={hoveredChar.type}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    className="description-text"
+                    style={{ whiteSpace: 'pre-line' }}
+                  >
+                    {hoveredChar.description}
+                  </motion.p>
+                </AnimatePresence>
               </div>
             </div>
           </div>
 
+          {/* Right Side: Interactive Character Plates */}
           <div className="character-right-section">
             {CHARACTERS.map((char, i) => (
               <motion.button
@@ -94,13 +109,13 @@ export function CharacterSelect({ onSelect }: Props) {
                 className={`character-plate-button plate-${i}`}
                 onMouseEnter={() => setHoveredChar(char)}
                 onClick={() => handleSelect(char.type)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.08, x: -15 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Image 
                   src={char.plateImg} 
                   alt={char.title} 
-                  width={320} 
+                  width={310} 
                   height={100} 
                   className="plate-img"
                 />
