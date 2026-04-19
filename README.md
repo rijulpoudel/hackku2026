@@ -11,8 +11,6 @@ You just graduated. You have **$2,100 in savings** and **$34,000 in student loan
 
 LAUNCH puts you through **12 years of real financial decisions** — ages 22 to 33 — one full-screen scenario at a time. Every choice compounds. Every mistake has a cost. Every smart move builds your future.
 
-Inspired by [playspent.org](https://playspent.org), but instead of surviving a month, you're **building a life**.
-
 ---
 
 ## The Game
@@ -43,7 +41,7 @@ Inspired by [playspent.org](https://playspent.org), but instead of surviving a m
 | Database | MongoDB Atlas |
 | AI | Google Gemini API (`gemini-2.0-flash`) |
 | Images | Pollinations.ai (free, URL-based, no API key) |
-| Audio | ElevenLabs (pre-generated MP3s + real-time narrator) |
+| Audio | ElevenLabs (real-time TTS narrator + Instant Voice Cloning) |
 | Auth | Auth0 (`@auth0/nextjs-auth0`) |
 | Deploy | Vercel |
 
@@ -59,6 +57,13 @@ Every decision surface a real financial concept — defined in plain English, wi
 
 ### Compounding Choices
 Decisions you make early affect what scenarios appear later. Skip the 401k in Year 3? You'll feel it in Year 9. Build an emergency fund? That unlocks investment opportunities.
+
+### Custom Character + Voice Cloning
+Don't want to play as Maya, Alex, Jordan, or Sam? Build your own. The custom character flow lets you set your own name, pick from 8 career paths, dial in your salary, loan balance, and savings with sliders, and toggle real-life flags like freelancing, homeownership, and having children. PSLF eligibility is detected automatically based on your career.
+
+Once you confirm your character, you can **record your own voice**. The browser captures 15–60 seconds of you reading the LAUNCH script, sends the audio to ElevenLabs Instant Voice Cloning, and gets back a voice ID — all without leaving the app. Voice settings (stability 0.38, similarity 0.85, speaker boost) are applied automatically via the API. From that point on, every narration in your game is read in your own cloned voice.
+
+Custom characters skip the hard-coded anchor decisions entirely. All 12 years are generated live by Gemini, personalized to your exact financial profile.
 
 ### Analytics for Security Benefit
 Every decision is stored in MongoDB — anonymized, tagged by scenario type, character, age, and optimality. After 500 players, you have a dataset that shows exactly which financial decisions graduates get wrong most, and when.
@@ -77,10 +82,14 @@ launch/
 │       ├── generate-decision/      # Gemini decision generator
 │       ├── apply-choice/           # Save choice to MongoDB
 │       ├── generate-verdict/       # Final Gemini report
-│       └── leaderboard/            # Global leaderboard
+│       ├── leaderboard/            # Global leaderboard
+│       ├── narrate/                # ElevenLabs TTS (supports custom voice ID)
+│       └── clone-voice/            # ElevenLabs Instant Voice Cloning
 ├── components/
 │   ├── LandingScreen.tsx
 │   ├── CharacterSelect.tsx
+│   ├── CustomCharacterForm.tsx     # 3-step custom character builder
+│   ├── VoiceRecorder.tsx           # Browser mic → ElevenLabs voice clone
 │   ├── DecisionScreen.tsx          # Full-screen decision UI
 │   ├── ChoiceCard.tsx
 │   ├── NetWorthBar.tsx             # Fixed top bar with live net worth
@@ -133,9 +142,9 @@ AUTH0_ISSUER_BASE_URL=https://your-tenant.auth0.com
 AUTH0_CLIENT_ID=your_auth0_client_id
 AUTH0_CLIENT_SECRET=your_auth0_client_secret
 
-# ElevenLabs
+# ElevenLabs (Creator plan or above required for voice cloning)
 ELEVENLABS_API_KEY=your_elevenlabs_key
-ELEVENLABS_VOICE_ID=your_voice_id
+ELEVENLABS_VOICE_ID=your_default_voice_id  # fallback for preset characters
 ```
 
 ### 3. Run the development server
@@ -150,12 +159,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Characters
 
-| Character | Starting Salary | Playstyle |
-|---|---|---|
-| The Employee | $45,000/yr | Stable income, benefits, 401k access |
-| The Freelancer | Variable | High ceiling, unstable base, tax complexity |
-| The Grad Student | $22,000/yr | Low income now, higher later |
-| The Side Hustler | $35,000 + side | Multiple income streams, hustle tax |
+| Character | Starting Salary | Net Worth | Playstyle |
+|---|---|---|---|
+| Maya Chen — PhD Student | $28,000/yr stipend | -$34,000 | Loans deferred, Roth IRA opportunity, low income now |
+| Alex Rivera — Corporate Tech | $58,000/yr | -$29,900 | 401k match, stable salary, lifestyle inflation risk |
+| Jordan Kim — Freelance Creative | $0 (building) | -$36,000 | Irregular income, self-employment tax, no benefits |
+| Sam Patel — Public Teacher | $38,000/yr | -$31,900 | PSLF eligible, pension, low salary but high security |
+| **Custom** | You decide | You decide | 8 career paths, custom sliders, **your own cloned voice** |
 
 ---
 
