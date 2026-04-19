@@ -70,7 +70,10 @@ export default function Home() {
     onContinue: handleContinue,
     onLeaderboard: () => setPhase('leaderboard'),
     onScenes: () => setPhase('scenes'),
-    onCredits: () => setPhase('credits'),
+    onCredits: () => {
+      playSfx('click')
+      router.push('/credits')
+    },
     onLoadGame: handleLoadGame,
     hasSavedGame,
     hasSaveSlots: hasSaves(),
@@ -117,14 +120,6 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Credits modal — overlays landing ────────────── */}
-      {phase === 'credits' && (
-        <>
-          <LandingScreen {...landingProps} />
-          <CreditsModal onClose={() => setPhase('landing')} />
-        </>
-      )}
 
       {/* ── Load game page — standalone ──────────── */}
       {phase === 'loadgame' && (
