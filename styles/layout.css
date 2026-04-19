@@ -72,8 +72,8 @@
 .global-lantern-right {
   pointer-events: none;
   position: fixed;
-  bottom: -25px;
-  right: 250px;
+  bottom: -45px;
+  right: 350px;
   z-index: 25;
   width: clamp(130px, 14vw, 240px);
 }
