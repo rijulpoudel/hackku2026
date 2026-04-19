@@ -154,8 +154,8 @@ export function CharacterSelect({ onSelect }: Props) {
                 <Image
                   src={char.plateImg}
                   alt={char.title}
-                  width={130}
-                  height={42}
+                  width={220}
+                  height={70}
                   className="plate-img"
                 />
               </motion.button>
