@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { CharacterType } from '@/types/game'
 import { playSfx } from '@/lib/audio'
+import { VoiceRecorder } from '@/components/VoiceRecorder'
 
 const CHARACTERS: Array<{
   type: CharacterType
@@ -58,6 +59,19 @@ interface Props {
 
 export function CharacterSelect({ onSelect }: Props) {
   const [hoveredChar, setHoveredChar] = useState(CHARACTERS[0])
+  // After picking a character, show the voice step before starting
+  const [pendingChar, setPendingChar] = useState<typeof CHARACTERS[0] | null>(null)
+
+  function handleCharClick(char: typeof CHARACTERS[0]) {
+    playSfx('click')
+    setPendingChar(char)
+  }
+
+  function confirmAndStart(char: typeof CHARACTERS[0]) {
+    // Clear any stale voice ID from a previous session
+    sessionStorage.removeItem('launch_custom_voice_id')
+    onSelect(char.type, char.name)
+  }
 
   return (
     <motion.div
@@ -147,7 +161,7 @@ export function CharacterSelect({ onSelect }: Props) {
                 key={char.type}
                 className={`character-plate-button plate-${i}`}
                 onMouseEnter={() => { setHoveredChar(char); playSfx('hover') }}
-                onClick={() => onSelect(char.type, char.name)}
+                onClick={() => handleCharClick(char)}
                 whileHover={{ scale: 1.08, x: -15 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -164,6 +178,84 @@ export function CharacterSelect({ onSelect }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Voice step — slides up over the board after picking a character */}
+      <AnimatePresence>
+        {pendingChar && (
+          <motion.div
+            key="voice-step"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.55)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 50,
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 24 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                alignItems: 'center',
+                maxWidth: 380,
+                width: '90%',
+              }}
+            >
+              {/* Character confirmation header */}
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.14)',
+                borderRadius: '1rem',
+                padding: '1rem 1.5rem',
+                width: '100%',
+                textAlign: 'center',
+                color: 'white',
+                fontFamily: `'HYWenHei', system-ui, sans-serif`,
+              }}>
+                <p style={{ fontSize: '0.7rem', opacity: 0.6, marginBottom: '0.2rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Your story begins
+                </p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>{pendingChar.name}</p>
+                <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{pendingChar.title} · {pendingChar.netWorth}</p>
+              </div>
+
+              {/* Voice recorder */}
+              <VoiceRecorder
+                characterName={pendingChar.name}
+                onCloned={() => confirmAndStart(pendingChar)}
+                onSkip={() => confirmAndStart(pendingChar)}
+              />
+
+              {/* Back link */}
+              <button
+                onClick={() => setPendingChar(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(255,255,255,0.45)',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  fontFamily: `'HYWenHei', system-ui, sans-serif`,
+                  textDecoration: 'underline',
+                }}
+              >
+                ← Change character
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

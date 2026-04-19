@@ -22,11 +22,14 @@ export async function narrateScene(text: string): Promise<void> {
   // Always stop whatever is currently playing before starting new narration
   stopNarration();
 
+  // Use the player's cloned voice if they recorded one this session
+  const customVoiceId = sessionStorage.getItem("launch_custom_voice_id") || undefined;
+
   try {
     const res = await fetch("/api/narrate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, voiceId: customVoiceId }),
     });
 
     if (!res.ok) return; // Silently skip if ElevenLabs is not configured
