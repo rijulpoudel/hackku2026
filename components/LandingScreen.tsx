@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { playSfx } from '@/lib/audio'
 
 interface Props {
   onStart: () => void
@@ -94,6 +95,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               type="button"
               aria-label="Play"
               onClick={onStart}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-play"
@@ -106,6 +108,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               type="button"
               aria-label="Continue"
               onClick={onContinue}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -119,6 +122,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               type="button"
               aria-label="Scene"
               onClick={onScenes}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -131,6 +135,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               type="button"
               aria-label="Load Scenes"
               onClick={onLoadGame}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"
@@ -144,6 +149,7 @@ export function LandingScreen({ onStart, onContinue, onLeaderboard, onScenes, on
               type="button"
               aria-label="Credits"
               onClick={onCredits}
+              onHoverStart={() => playSfx('hover')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="landing-btn-disabled"

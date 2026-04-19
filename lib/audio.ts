@@ -110,18 +110,47 @@ export function setBgMusicVolume(vol: number) {
   bgMusic?.volume(vol);
 }
 
+// ─── Mute ─────────────────────────────────────────────────────────────────────
+let _muted = false;
+
+export function isMuted() {
+  return _muted;
+}
+
+export function toggleMute() {
+  _muted = !_muted;
+  if (_muted) {
+    Howler.volume(0);
+    if (currentNarrator) currentNarrator.volume = 0;
+  } else {
+    Howler.volume(1);
+    if (currentNarrator) currentNarrator.volume = 0.85;
+  }
+  return _muted;
+}
+
 // ─── Sound Effects ────────────────────────────────────────────────────────────
 const sfx: Record<string, Howl> = {};
 
 const SFX_FILES: Record<string, string> = {
   click: "/audio/click.mp3",
+  hover: "/audio/click.mp3",   // reuse click at lower volume for hover
   "choice-good": "/audio/choice-correct.mp3",
   "choice-neutral": "/audio/choice-neutral.mp3",
   "choice-bad": "/audio/choice-bad.mp3",
 };
 
+const SFX_VOLUME: Record<string, number> = {
+  click: 0.5,
+  hover: 0.12,
+  "choice-good": 0.7,
+  "choice-neutral": 0.7,
+  "choice-bad": 0.7,
+};
+
 export function playSfx(key: string) {
   if (typeof window === "undefined") return;
+  if (_muted) return;
 
   // Resume Web Audio API context if suspended (production autoplay policy)
   if (Howler.ctx && Howler.ctx.state === "suspended") {
@@ -131,7 +160,7 @@ export function playSfx(key: string) {
   if (!sfx[key] && SFX_FILES[key]) {
     sfx[key] = new Howl({
       src: [SFX_FILES[key]],
-      volume: key === "click" ? 0.5 : 0.7,
+      volume: SFX_VOLUME[key] ?? 0.5,
       onloaderror: () => {
         delete sfx[key];
       },

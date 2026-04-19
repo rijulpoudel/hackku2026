@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import Image from 'next/image'
 import { CharacterType } from '@/types/game'
+import { playSfx } from '@/lib/audio'
 
 const CHARACTERS: Array<{
   type: CharacterType
@@ -145,7 +146,7 @@ export function CharacterSelect({ onSelect }: Props) {
               <motion.button
                 key={char.type}
                 className={`character-plate-button plate-${i}`}
-                onMouseEnter={() => setHoveredChar(char)}
+                onMouseEnter={() => { setHoveredChar(char); playSfx('hover') }}
                 onClick={() => onSelect(char.type, char.name)}
                 whileHover={{ scale: 1.08, x: -15 }}
                 whileTap={{ scale: 0.95 }}
