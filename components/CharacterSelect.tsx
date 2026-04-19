@@ -14,25 +14,25 @@ const CHARACTERS: Array<{
     type: 'freelancer',
     title: 'Freelancer',
     plateImg: '/your_scence/Freelance.svg',
-    description: 'Variable income. No benefits. Full control. Self-employment taxes.',
+    description: '• Variable income\n• No benefits\n• Full control\n• Self-employment taxes',
   },
   {
     type: 'student',
     title: 'Grad Student',
     plateImg: '/your_scence/Grad student.svg',
-    description: 'Low income now. High potential later. Unique tax situation.',
+    description: '• Low income now\n• High potential later\n• Unique tax situation',
   },
   {
     type: 'side-hustler',
     title: 'Side Hustler',
     plateImg: '/your_scence/Side hustler.svg',
-    description: 'Two income streams. Complex taxes. High upside. High stress.',
+    description: '• Two income streams\n• Complex taxes\n• High upside\n• High stress',
   },
   {
     type: 'employee',
     title: 'Corporate Employee',
     plateImg: '/your_scence/Corporate employee.svg',
-    description: 'Stable salary. 401k with match. Health insurance. The classic path.',
+    description: '• Stable salary\n• 401k with match\n• Health insurance\n• The classic path',
   },
 ]
 
@@ -82,7 +82,7 @@ export function CharacterSelect({ onSelect }: Props) {
                 className="description-box-img"
               />
               <div className="description-text-overlay">
-                <p className="description-text">{hoveredChar.description}</p>
+                <p className="description-text" style={{ whiteSpace: 'pre-line' }}>{hoveredChar.description}</p>
               </div>
             </div>
           </div>

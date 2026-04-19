@@ -52,20 +52,24 @@
 
 .character-description-container {
   position: absolute;
-  bottom: 80px;
-  left: 40px;
+  bottom: -2px;
+  left: -39px;
+  /* Shifted 80px left from 40px */
   width: 350px;
   height: 270px;
 }
 
 .character-pick-title {
   position: absolute;
-  bottom: 300px;
-  left: 80px;
+  bottom: 307px;
+  /* 270 height + 80 bottom + 20 gap */
+  left: 43px;
+  /* -40 left + 50 right shift */
   font-family: 'HYWenHei', system-ui, sans-serif;
-  font-size: 2.3rem;
+  font-size: 1.1rem;
+  /* Scaled down 30% from 2.3rem */
   font-weight: 900;
-  color: #fff;
+  color: #2E385F;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   z-index: 30;
@@ -80,15 +84,25 @@
 
 .description-text-overlay {
   position: absolute;
-  top: 40px;
-  left: 35px;
-  right: 35px;
-  bottom: 35px;
+  top: 10;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
   color: #2E385F;
   font-family: 'HYWenHei', system-ui, sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   line-height: 1.5;
-  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.description-text {
+  margin: 0;
+  text-align: center;
 }
 
 /* Right side: Plated Characters */
@@ -120,7 +134,7 @@
 }
 
 .plate-img {
-  width: 45%;
+  width: 30%;
   height: auto;
 }
 
