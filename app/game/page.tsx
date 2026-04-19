@@ -328,12 +328,6 @@ export default function GamePage() {
             {/* ── 1ST MAIN DIV: Top Status Bar ────────────────── */}
             <div className="game-top-bar">
               <div className="game-top-item">
-                <span className="year-age-label" style={{ marginRight: '1rem' }}>
-                  Year {playerState.currentYear} · Age {playerState.age}
-                </span>
-              </div>
-
-              <div className="game-top-item">
                 <div className="money-container">
                   <Image
                     src="/option_page/money_holder.svg"
@@ -352,6 +346,12 @@ export default function GamePage() {
                     </span>
                   </div>
                 </div>
+              </div>
+
+              <div className="game-top-item">
+                <span className="year-age-label" style={{ marginRight: '1rem' }}>
+                  Year {playerState.currentYear} · Age {playerState.age}
+                </span>
               </div>
 
               <div className="game-top-item">
@@ -405,7 +405,7 @@ export default function GamePage() {
 
                   {/* Financial Badge / Term Pop-up */}
                   <div className="financial-badge-container">
-                    <motion.div 
+                    <motion.div
                       className="financial-badge-box"
                       onClick={() => setBadgeOpen(!badgeOpen)}
                       whileHover={{ scale: 1.02 }}
@@ -489,18 +489,18 @@ export default function GamePage() {
                         className="fact-display"
                         style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
                       >
-                         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2E385F' }}>The Result</h3>
-                         <div style={{ background: 'rgba(46, 56, 95, 0.05)', padding: '1rem', borderRadius: '1rem' }}>
-                            <p style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '0.5rem', fontWeight: 600 }}>{currentDecision.choices[chosenIndex].lesson}</p>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.4 }}>{currentDecision.fact_after}</p>
-                         </div>
-                         <button 
-                            onClick={handleContinue}
-                            className="bg-[#2E385F] text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
-                            style={{ alignSelf: 'center', marginTop: '0.5rem' }}
-                         >
-                            Next Year →
-                         </button>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2E385F' }}>The Result</h3>
+                        <div style={{ background: 'rgba(46, 56, 95, 0.05)', padding: '1rem', borderRadius: '1rem' }}>
+                          <p style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '0.5rem', fontWeight: 600 }}>{currentDecision.choices[chosenIndex].lesson}</p>
+                          <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.4 }}>{currentDecision.fact_after}</p>
+                        </div>
+                        <button
+                          onClick={handleContinue}
+                          className="bg-[#2E385F] text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
+                          style={{ alignSelf: 'center', marginTop: '0.5rem' }}
+                        >
+                          Next Year →
+                        </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -512,7 +512,7 @@ export default function GamePage() {
 
             {/* ── 3RD MAIN DIV: Bottom Action Bar ────────────────── */}
             <div className="game-bottom-bar">
-              <button 
+              <button
                 onClick={handleSave}
                 className="save-game-btn"
                 disabled={saving || saved}
