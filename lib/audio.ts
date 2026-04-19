@@ -3,8 +3,14 @@ import { Howl, Howler } from "howler";
 // ─── Narrator (ElevenLabs streamed audio) ────────────────────────────────────
 let currentNarrator: HTMLAudioElement | null = null;
 let currentNarratorUrl: string | null = null;
+let pendingNarrationTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function stopNarration() {
+  // Cancel any queued narration that hasn't started yet
+  if (pendingNarrationTimer !== null) {
+    clearTimeout(pendingNarrationTimer);
+    pendingNarrationTimer = null;
+  }
   if (currentNarrator) {
     currentNarrator.pause();
     currentNarrator.src = "";
@@ -14,6 +20,21 @@ export function stopNarration() {
     URL.revokeObjectURL(currentNarratorUrl);
     currentNarratorUrl = null;
   }
+}
+
+/**
+ * Schedule a narration after `delayMs`. Cancels any previously scheduled
+ * or currently playing narration first, so only one narration can ever
+ * be pending or playing at a time.
+ */
+export function scheduleNarration(text: string, delayMs: number): void {
+  if (typeof window === "undefined") return;
+  // Kill anything currently playing or queued
+  stopNarration();
+  pendingNarrationTimer = setTimeout(() => {
+    pendingNarrationTimer = null;
+    narrateScene(text);
+  }, delayMs);
 }
 
 export async function narrateScene(text: string): Promise<void> {

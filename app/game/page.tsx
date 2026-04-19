@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PlayerState, GeneratedDecision, CharacterType } from '@/types/game'
-import { narrateScene, stopNarration, playChoiceResult, playSfx, startBgMusic, toggleMute, isMuted } from '@/lib/audio'
+import { narrateScene, scheduleNarration, stopNarration, playChoiceResult, playSfx, startBgMusic, toggleMute, isMuted } from '@/lib/audio'
 import { saveGame } from '@/lib/save-game'
 import { YearTransition } from '@/components/YearTransition'
 import { DecisionLoading } from '@/components/DecisionLoading'
@@ -218,14 +218,14 @@ export default function GamePage() {
         }
         setCurrentDecision(retryData)
         setPhase('decision')
-        setTimeout(() => narrateScene(retryData.scenario), 400)
+        scheduleNarration(retryData.scenario, 400)
         return
       }
       const decision: GeneratedDecision = data
       setCurrentDecision(decision)
       setPhase('decision')
 
-      setTimeout(() => narrateScene(decision.scenario), 400)
+      scheduleNarration(decision.scenario, 400)
     } catch (err) {
       console.error('Failed to fetch decision:', err)
       setPhase('decision')
@@ -307,7 +307,7 @@ export default function GamePage() {
     setPhase('transition')
 
     if (nextYear > 1) {
-      setTimeout(() => narrateScene('Time passes. The choices you made are already compounding.'), 300)
+      scheduleNarration('Time passes. The choices you made are already compounding.', 300)
     }
     setTimeout(() => fetchNextDecision(newState), 2000)
   }
