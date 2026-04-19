@@ -48,7 +48,7 @@
 
 /* --- Left Section (Description & Title) --- */
 .character-left-section {
-  flex: 30;
+  flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -119,7 +119,7 @@
 
 /* --- Right Section (Character Plates) --- */
 .character-right-section {
-  flex: 70;
+  flex: 1;
   position: relative;
 }
 
