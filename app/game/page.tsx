@@ -199,7 +199,29 @@ export default function GamePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state),
       })
-      const decision: GeneratedDecision = await res.json()
+      const data = await res.json()
+      // Guard against malformed Gemini responses (missing choices array)
+      if (!data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
+        console.error('Decision missing choices array:', data)
+        setPhase('loading')
+        // Retry once
+        const retry = await fetch('/api/generate-decision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state),
+        })
+        const retryData = await retry.json()
+        if (!retryData.choices || !Array.isArray(retryData.choices) || retryData.choices.length === 0) {
+          console.error('Retry also missing choices, staying on loading')
+          setPhase('decision') // will render nothing since currentDecision is null
+          return
+        }
+        setCurrentDecision(retryData)
+        setPhase('decision')
+        setTimeout(() => narrateScene(retryData.scenario), 400)
+        return
+      }
+      const decision: GeneratedDecision = data
       setCurrentDecision(decision)
       setPhase('decision')
 
@@ -700,7 +722,7 @@ export default function GamePage() {
                             </p>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8vw', marginTop: 'auto', marginBottom: '2vw' }}>
-                              {currentDecision.choices.map((choice, i) => (
+                              {(currentDecision.choices ?? []).map((choice, i) => (
                                 <button
                                   key={i}
                                   onClick={() => handleChoice(i)}
